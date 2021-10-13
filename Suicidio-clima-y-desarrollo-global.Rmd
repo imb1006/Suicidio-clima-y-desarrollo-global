@@ -1,0 +1,6 @@
+---
+title: "Suicidio-clima-y-desarrollo-global"
+author: "InesMartos"
+date: "13/10/2021"
+output: html_document
+---
