@@ -12,5 +12,5 @@ Datos_Suicidio
 # La tasa media de suicidios por 100.000 habitantes se encuentra en la columna "FactValueNumeric"
 
 # Carga de datos de los diferentes sectores de empleo por países desde el 2000 al 2013:
-# NO ESTÁ BIEN CARGADO, CORREGIR!!!!!
-Datos_Sectores <- read_csv("INPUT/DATA/EmploymentSectors.csv")
+Datos_Sectores <- read_delim("INPUT/DATA/EmploymentSectors.csv", 
+                             delim = ";", escape_double = FALSE, trim_ws = TRUE)
