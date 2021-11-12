@@ -1,6 +1,8 @@
 ---
 title: "Suicidio-clima-y-desarrollo-global"
-author: "InesMartos"
-date: "13/10/2021"
+author: "Ines Martos, Paula Rastrilla y Naiara Rodríguez"
+date: "12-11-2021"
 output: html_document
 ---
+
+
