@@ -17,6 +17,11 @@ Datos_Sectores <- read_delim("INPUT/DATA/EmploymentSectors.csv",
                              delim = ";", escape_double = FALSE, trim_ws = TRUE)
 Datos_Sectores
 
+#Carga de datos de emisiones anuales de CO2 por países
+
+Datos_Emisiones <- read_csv("INPUT/DATA/annual-co2-emissions-per-country.csv")
+Datos_Emisiones
+
 # Seleccionamos datos de los años de 2005 a 2013 -------------------------------------------
 #vamos a utilizar la letra 'f' de final, porque serán los datos que utlizaremos--> SE PUEDE CAMBIAR, NO DEFINITIVO ()
 
