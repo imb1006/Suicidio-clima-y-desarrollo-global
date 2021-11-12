@@ -39,3 +39,7 @@ fDatos_Suicidio
 fDatos_Sectores <- Datos_Sectores %>% filter(between(Year,2005,2013))
 fDatos_Sectores
 
+#Datos de las emisiones de CO2
+fDatos_Emisiones <- Datos_Emisiones %>% filter(between(Year,2005,2020))
+fDatos_Emisiones
+
