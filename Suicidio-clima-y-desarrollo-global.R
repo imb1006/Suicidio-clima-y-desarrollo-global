@@ -1,6 +1,7 @@
 # Importación de Datos ----------------------------------------------------
 library(readr)
 library(tidyverse)
+library(dplyr)
 
 # Para tener los datos del clima utilizamos importacion de csv utilizando las opciones: import dataset from text (readr)
 Datos_Clima <- read_csv("INPUT/DATA/GlobalLandTemperaturesByCountry.csv")
@@ -43,9 +44,11 @@ fDatos_Sectores
 fDatos_Emisiones <- Datos_Emisiones %>% filter(between(Year,2005,2020))
 fDatos_Emisiones
 
-# MODIFICAR LA TABLA DEL CLIMA --------------------------------------------
+# Modificación de tablas --------------------------------------------
 
-# modificamos la tabla del clima para quitar la columna de desviacion y cambiamos el nombre de las columnas
+
+# * Clima -----------------------------------------------------------------
+# Modificamos la tabla del clima para quitar la columna de desviación y cambiamos el nombre de las columnas
 colnames(fDatos_Clima)<-c("Fecha","Temperatura","DesviacionTemperatura","País")
 fDatos_Clima
 
@@ -83,7 +86,7 @@ f1Datos_Clima <-full_join(x=fDatos_Clima2005,y=full_join(x=fDatos_Clima2006,y=fu
 f1Datos_Clima
 #View(f1Datos_Clima)
 
-# vamos a llamar mDatos_Clima, porque está agrupado por meses
+# Vamos a llamar mDatos_Clima, porque está agrupado por meses
 mDatos_Clima<-f1Datos_Clima %>% select(Fecha,Temperatura,País,Año)
 mDatos_Clima
 
@@ -97,3 +100,10 @@ Clima <- mutate(Clima,Año=as.integer(Año))
 Clima
 
 
+# * Suicidio --------------------------------------------------------------
+# Creamos un tibble "Suicidio" que almacena las columnas que nos interesan de "fDatos_Suicidio" renombradas.
+Suicidio <- fDatos_Suicidio %>% 
+  select(ParentLocation, Location, Period, Dim1, FactValueNumeric) %>% 
+  rename(Region = ParentLocation, Pais = Location, Año = Period, Sexo = Dim1, Tasa_suicidio = FactValueNumeric) %>% 
+  mutate(Año = as.integer(Año))
+Suicidio
