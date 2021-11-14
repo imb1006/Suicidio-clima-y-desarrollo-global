@@ -43,3 +43,57 @@ fDatos_Sectores
 fDatos_Emisiones <- Datos_Emisiones %>% filter(between(Year,2005,2020))
 fDatos_Emisiones
 
+# MODIFICAR LA TABLA DEL CLIMA --------------------------------------------
+
+# modificamos la tabla del clima para quitar la columna de desviacion y cambiamos el nombre de las columnas
+colnames(fDatos_Clima)<-c("Fecha","Temperatura","DesviacionTemperatura","País")
+fDatos_Clima
+
+
+fDatos_Clima2005<- fDatos_Clima %>% filter(between(Fecha,as.Date("2005-01-01"),as.Date("2005-12-31"))) %>% mutate(Año= "2005")
+fDatos_Clima2005
+
+fDatos_Clima2006 <- fDatos_Clima %>% filter(between(Fecha,as.Date("2006-01-01"),as.Date("2006-12-31"))) %>% mutate(Año= "2006")
+fDatos_Clima2006
+
+fDatos_Clima2007 <- fDatos_Clima %>% filter(between(Fecha,as.Date("2007-01-01"),as.Date("2007-12-31"))) %>% mutate(Año= "2007")
+fDatos_Clima2007
+
+fDatos_Clima2008 <- fDatos_Clima %>% filter(between(Fecha,as.Date("2008-01-01"),as.Date("2008-12-31"))) %>% mutate(Año= "2008")
+fDatos_Clima2008
+
+fDatos_Clima2009 <- fDatos_Clima %>% filter(between(Fecha,as.Date("2009-01-01"),as.Date("2009-12-31"))) %>% mutate(Año= "2009")
+fDatos_Clima2009
+
+fDatos_Clima2010 <- fDatos_Clima %>% filter(between(Fecha,as.Date("2010-01-01"),as.Date("2010-12-31"))) %>% mutate(Año= "2010")
+fDatos_Clima2010
+
+fDatos_Clima2011 <- fDatos_Clima %>% filter(between(Fecha,as.Date("2011-01-01"),as.Date("2011-12-31"))) %>% mutate(Año= "2011")
+fDatos_Clima2011
+
+fDatos_Clima2012 <- fDatos_Clima %>% filter(between(Fecha,as.Date("2012-01-01"),as.Date("2012-12-31"))) %>% mutate(Año= "2012")
+fDatos_Clima2012
+
+fDatos_Clima2013 <- fDatos_Clima %>% filter(between(Fecha,as.Date("2013-01-01"),as.Date("2013-12-31"))) %>% mutate(Año= "2013")
+fDatos_Clima2013
+
+# No hemos conseguido hacerlo todo en la misma tabla por eso hemos hecho una tabla para cada año y luego las hemos unido.
+
+f1Datos_Clima <-full_join(x=fDatos_Clima2005,y=full_join(x=fDatos_Clima2006,y=full_join(x=fDatos_Clima2007,y=full_join(x=fDatos_Clima2008,y=full_join(x=fDatos_Clima2009,y=full_join(x=fDatos_Clima2010,y=full_join(x=fDatos_Clima2011,y=full_join(x=fDatos_Clima2012,y=fDatos_Clima2013))))))))
+f1Datos_Clima
+#View(f1Datos_Clima)
+
+# vamos a llamar mDatos_Clima, porque está agrupado por meses
+mDatos_Clima<-f1Datos_Clima %>% select(Fecha,Temperatura,País,Año)
+mDatos_Clima
+
+# Hasta aquí tenemos los datos por meses, ahora tenemos que hacer la media por años. Utilizamos un group_by por País y año
+Clima <- mDatos_Clima %>% group_by(País,Año) %>% summarise(Temperatura_Media=mean(Temperatura,na.rm=TRUE))
+Clima
+#View(Clima)
+
+# Cambio el tipo de la columna Año en la tabla Clima, de character a double/ integer.
+Clima <- mutate(Clima,Año=as.integer(Año))
+Clima
+
+
