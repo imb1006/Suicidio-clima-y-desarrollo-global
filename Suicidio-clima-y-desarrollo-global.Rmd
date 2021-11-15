@@ -1,8 +1,26 @@
 ---
-title: "Suicidio-clima-y-desarrollo-global"
-author: "Ines Martos, Paula Rastrilla y Naiara Rodríguez"
-date: "12-11-2021"
-output: html_document
+title:    |
+  |Suicidio, clima 
+  |y desarrollo global
+  
+  |Fuentes de datos Biomédicas y Web semántica
+  |3º Grado de Ingeniería de la Salud
+  
+author:   |
+  |**Ines Martos, Paula Rastrilla y Naiara Rodríguez**
+  |*[email](mailto:imb1006@alu.ubu.es) // [email](mailto:prg1006@alu.ubu.es) //
+  |[email](mailto:nrg1007@alu.ubu.es)*
+
+date: "`r format(Sys.time(),'%d %B, %Y')`"
+
+output: 
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+always_allow_html: true
 ---
 
 

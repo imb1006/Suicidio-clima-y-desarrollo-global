@@ -27,9 +27,7 @@ Datos_Emisiones
 #vamos a utilizar la letra 'f' de final, porque serán los datos que utlizaremos--> SE PUEDE CAMBIAR, NO DEFINITIVO ()
 
 #Datos del clima de 2005 a 2013
-fDatos_Clima <- Datos_Clima %>% filter(between(dt,as.Date("2005-01-01"),as.Date("2013-12-31"))) # hay que hacer algo con esto porque
-                                                                                                # en este fichero es tipo date pero en 
-                                                                                                # los otros no (son tipo double)
+fDatos_Clima <- Datos_Clima %>% filter(between(dt,as.Date("2005-01-01"),as.Date("2013-12-31"))) # hay que hacer algo con esto porque en este fichero es tipo date pero en los otros no (son tipo double)
 fDatos_Clima
 
 #Datos de suicidios
@@ -95,7 +93,7 @@ Clima <- mDatos_Clima %>% group_by(País,Año) %>% summarise(Temperatura_Media=m
 Clima
 #View(Clima)
 
-# Cambio el tipo de la columna Año en la tabla Clima, de character a double/ integer.
+# Cambio el tipo de la columna Año en la tabla Clima, de character a double/integer.
 Clima <- mutate(Clima,Año=as.integer(Año))
 Clima
 
@@ -107,3 +105,22 @@ Suicidio <- fDatos_Suicidio %>%
   rename(Region = ParentLocation, Pais = Location, Año = Period, Sexo = Dim1, Tasa_suicidio = FactValueNumeric) %>% 
   mutate(Año = as.integer(Año))
 Suicidio
+
+# * Emisiones CO2 --------------------------------------------------------------
+# Se crea un tibble "Contaminación" que almacena las columnas con las que se va a trabajar de "fDatos_Emisiones" y se renombran las columnas para que tengan los mismos nombres que el resto de tablas.
+
+Contaminacion <- fDatos_Emisiones %>%
+  select(Entity, Year, `Annual CO2 emissions`) %>%
+  rename(Pais = Entity, Año = Year, Emisiones_Anuales = `Annual CO2 emissions`) %>%
+  mutate(Año = as.integer(Año))
+Contaminacion
+
+  
+# * Sectores Laborales --------------------------------------------------------------
+# Se crea un tibble "Sectores" que almacena las columnas con las que se va a trabajar de "fDatos_Sectores" y se renombran las columnas para que tengan los mismos nombres que el resto de tablas.
+
+Sectores <- fDatos_Sectores %>%
+  select(Entity, Year, `Employment in agriculture (% of total employment) (modeled ILO estimate)`, `Employment in industry (% of total employment) (modeled ILO estimate)`, `Employment in services (% of total employment) (modeled ILO estimate)`) %>%
+  rename(Pais = Entity, Año = Year, Empleo_Agricultura = `Employment in agriculture (% of total employment) (modeled ILO estimate)`, Empleo_Industria = `Employment in industry (% of total employment) (modeled ILO estimate)`, Empleo_Servicios = `Employment in services (% of total employment) (modeled ILO estimate)`) %>%
+  mutate(Año = as.integer(Año))
+Sectores
