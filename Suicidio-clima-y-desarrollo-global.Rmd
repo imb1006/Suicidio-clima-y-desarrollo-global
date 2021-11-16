@@ -1,15 +1,17 @@
 ---
-title:    |
-  |Suicidio, clima 
-  |y desarrollo global
+title:   
+   _Suicidio, clima y desarrollo global._
+   
+   ![](C:/Users/Usuario/Documents/Fuentes de datos/Suicidio-clima-y-desarrollo-global/Imagen3.png){width='150px'}
+   
+subtitle: |
+  Fuentes de datos Biomédicas y Web semántica  
+    
+  Grado de Ingeniería de la Salud 
   
-  |Fuentes de datos Biomédicas y Web semántica
-  |3º Grado de Ingeniería de la Salud
-  
-author:   |
-  |**Ines Martos, Paula Rastrilla y Naiara Rodríguez**
-  |*[email](mailto:imb1006@alu.ubu.es) // [email](mailto:prg1006@alu.ubu.es) //
-  |[email](mailto:nrg1007@alu.ubu.es)*
+
+author:  | 
+  | **Ines Martos**  *[email](mailto:imb1006@alu.ubu.es)* , **Paula Rastrilla** *[email](mailto:prg1006@alu.ubu.es)* **y Naiara Rodríguez** *[email](mailto:nrg1007@alu.ubu.es)*.
 
 date: "`r format(Sys.time(),'%d %B, %Y')`"
 
@@ -24,3 +26,29 @@ always_allow_html: true
 ---
 
 
+![](C:/Users/Usuario/Documents/Fuentes de datos/Suicidio-clima-y-desarrollo-global/Imagen1.jpg)  
+
+---
+## Introducción, objetivos y justificación  
+  
+  
+#### Introducción
+  
+  A lo largo de este seminario, se pretende conocer la relación que existe entre _**factores climáticos**_, el _**desarrollo socioeconómico**_ de las distintas naciones y los _**índices de suicidio**_ publicados.   
+    
+    
+#### Objetivos  
+  
+  Inicialmente, se plantean una serie de objetivos de estudio, para los cuales se obtendrá respuesta tras el análisis correspondiente de los datos: 
+  
+  1. Evaluar el impacto de la temperatura media anual de un país en su tasa global de suicidio.   
+  2. Estudiar la correlación entre los niveles de industrialización de un país (sector secundario) y sus tasas de emisión de CO2.  
+  3. Evaluar si las tasas de suicidios son más elevadas en países preeminentemente industriales, y su asociación al sexo.  
+  4. Análisis del aumento de emisiones de CO2 y su impacto en la temperatura media de una región/país.  
+  5. Comparación de las tasas de suicidio en países desarrollados, en vías de desarrollo y subdesarrollados. Análisis sectorial.  
+  
+  
+    
+#### Justificación del tema  
+  
+  La OMS define el suicidio como aquella acción mediante la cual un individuo se causa un daño a sí mismo, llegando a la muerte, sin tener en cuenta la intencionalidad y el conocimiento de los motivos. Sus características son la voluntariedad y la premeditación.  
