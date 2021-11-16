@@ -124,3 +124,89 @@ Sectores <- fDatos_Sectores %>%
   rename(Pais = Entity, Año = Year, Empleo_Agricultura = `Employment in agriculture (% of total employment) (modeled ILO estimate)`, Empleo_Industria = `Employment in industry (% of total employment) (modeled ILO estimate)`, Empleo_Servicios = `Employment in services (% of total employment) (modeled ILO estimate)`) %>%
   mutate(Año = as.integer(Año))
 Sectores
+
+
+
+
+# OBJETIVOS ---------------------------------------------------------------
+# *Evaluar el impacto de la temperatura media anual de un país en su tasa global de suicidio.-------- 
+
+
+# *Estudiar la correlación entre los niveles de industrialización de un país (sector secundario) y sus tasas de emisión de CO2.-----  
+
+
+# *Evaluar si las tasas de suicidios son más elevadas en países preeminentemente industriales, y su asociación al sexo.-------
+# Elegimos países con mayor tasa de industrialización:
+Sectores
+
+#***Segunda Forma (BUENA?)....................----
+Sectores1 <- Sectores %>% filter(Año==2013) %>% filter(Empleo_Industria>=35)
+Sectores1
+
+Suicidio
+Sectores_Suicidio <-left_join(x=Sectores1, y=Suicidio)
+Sectores_Suicidio
+
+# SS <- Sectores_Suicidio %>% select(Pais, Sexo, Tasa_suicidio)
+# SS
+
+# ggplot(data = SS, mapping=aes(x =Pais, y=Tasa_suicidio)) +
+#   geom_col(aes(fill = Sexo), position = "dodge") 
+
+ggplot(data = Sectores_Suicidio, mapping=aes(x =Pais, y=Tasa_suicidio)) +
+  geom_col(aes(fill = Sexo), position = "dodge") 
+
+#***Segunda Forma (BUENA?)....................----
+Sectores2 <- Sectores %>% filter(Año==2013)
+Sectores2
+
+Sectores_Suicidio2 <-right_join(x=Sectores2, y=Suicidio)
+# Lo hacemos con europa para una mejor visualizacion, pero hay que elegir los que más industria tengan 
+# y los que menos y compararlos
+Sectores_Suicidio2 <- Sectores_Suicidio2 %>% filter(Region=='Europe')
+Sectores_Suicidio2 
+
+
+
+SS2 <- pivot_wider(data = Sectores_Suicidio2, names_from = "Sexo", values_from = "Tasa_suicidio")
+SS2 
+
+SS3 <- pivot_longer(data = SS2, names_to = "Sectores", values_to = "Porcentaje_Sector", cols = c(Empleo_Agricultura:Empleo_Servicios))
+SS3
+
+SS3<-SS3 %>% filter(Año==2013)%>% select(Pais,Año,Female,Sectores,Porcentaje_Sector)
+
+# Mujeres (Female)
+# Gráfico en el que solo se muestran los porcentajes de los sectores por paises
+g1 <- ggplot(data = SS3, mapping=aes(x =Pais, y=Porcentaje_Sector)) +
+  geom_col(aes(fill = Sectores), position = "dodge") + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+g1
+
+# ggplot(data = Sectores_Suicidio2, mapping=aes(x =Pais, y=Porcentaje_Sector)) +
+#   geom_col(aes(fill = Sectores), position = "dodge")
+
+
+#gráfico en el que se muestra la tasa de suicidios por paises:
+g2 <- ggplot(data = Sectores_Suicidio2 %>% filter(Año==2013), aes(x = Pais, y = Tasa_suicidio)) +
+  geom_point(aes(colour = factor(Sexo))) +
+  scale_color_discrete(labels = c("Ambos sexos", "Mujer", "Varón"))+ 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))#+
+#facet_wrap(Pais)
+g2
+
+
+# PRUEBA DE SUMAR LAS GRÁFICAS DE PUNTOS CON LAS DE BARRAS
+# ---MAL---
+# Hay que averiguar como superponer las 2 gráficas que hemos hecho antes (g1 y g2)
+#
+# ggplot(data = SS3, mapping=aes(x =Pais, y=Porcentaje_Sector)) +
+#   geom_col(aes(fill = Sectores), position = "dodge") +
+#   #ggplot(data = Sectores_Suicidio2, aes(x = Pais, y = Tasa_suicidio)) +
+#   geom_point(aes(colour = factor(Sexo)))
+
+
+# *Análisis del aumento de emisiones de CO2 y su impacto en la temperatura media de una región/país.-----  
+
+
+# *Comparación de las tasas de suicidio en países desarrollados, en vías de desarrollo y subdesarrollados. Análisis sectorial.-----
