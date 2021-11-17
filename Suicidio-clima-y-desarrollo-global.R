@@ -139,7 +139,7 @@ Sectores
 # Elegimos países con mayor tasa de industrialización:
 Sectores
 
-#***Segunda Forma (BUENA?)....................----
+#***Primera Forma ....................----
 Sectores1 <- Sectores %>% filter(Año==2013) %>% filter(Empleo_Industria>=35)
 Sectores1
 
@@ -165,6 +165,10 @@ Sectores_Suicidio2 <-right_join(x=Sectores2, y=Suicidio)
 # y los que menos y compararlos
 Sectores_Suicidio2 <- Sectores_Suicidio2 %>% filter(Region=='Europe')
 Sectores_Suicidio2 
+
+
+
+# ***Forma Buena (P) ------------------------------------------------------
 
 Sectores_Suicidio2 %>% 
   pivot_longer(cols = starts_with("Empleo_"),names_to = "Sectores",values_to = "Porcentaje") %>% 
