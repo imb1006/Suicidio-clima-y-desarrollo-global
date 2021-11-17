@@ -1,12 +1,13 @@
 # Importación de Datos ----------------------------------------------------
+
+# Importamos las librerías que vamos a utilizar
 library(readr)
 library(tidyverse)
 library(dplyr)
 
-# Para tener los datos del clima utilizamos importacion de csv utilizando las opciones: import dataset from text (readr)
+# Carga de datos del clima desde 1700 a 2013:
 Datos_Clima <- read_csv("INPUT/DATA/GlobalLandTemperaturesByCountry.csv")
 Datos_Clima #Vemos que los datos son correctos
-# Habría que elegir las fechas correctas porque contiene todos los datos desde 1700 al 2013
 
 # Carga de datos de suicidio desde el 2000 al 2019:
 Datos_Suicidio <- read_csv("INPUT/DATA/SuicideGlobalRates.csv")
@@ -14,17 +15,15 @@ Datos_Suicidio
 # La tasa media de suicidios por 100.000 habitantes se encuentra en la columna "FactValueNumeric"
 
 # Carga de datos de los diferentes sectores de empleo por países desde el 2000 al 2013:
-Datos_Sectores <- read_delim("INPUT/DATA/EmploymentSectors.csv", 
-                             delim = ";", escape_double = FALSE, trim_ws = TRUE)
+Datos_Sectores <- read_delim("INPUT/DATA/EmploymentSectors.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
 Datos_Sectores
 
 #Carga de datos de emisiones anuales de CO2 por países
-
-Datos_Emisiones <- read_csv("INPUT/DATA/annual-co2-emissions-per-country.csv")
+Datos_Emisiones <- read_delim("INPUT/DATA/AnnualCO2EmissionsPerCountry.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
 Datos_Emisiones
 
 # Seleccionamos datos de los años de 2005 a 2013 -------------------------------------------
-#vamos a utilizar la letra 'f' de final, porque serán los datos que utlizaremos--> SE PUEDE CAMBIAR, NO DEFINITIVO ()
+#vamos a utilizar la letra 'f' de final, porque serán los datos que utilizaremos--> SE PUEDE CAMBIAR, NO DEFINITIVO ()
 
 #Datos del clima de 2005 a 2013
 fDatos_Clima <- Datos_Clima %>% filter(between(dt,as.Date("2005-01-01"),as.Date("2013-12-31"))) # hay que hacer algo con esto porque en este fichero es tipo date pero en los otros no (son tipo double)
@@ -42,8 +41,9 @@ fDatos_Sectores
 fDatos_Emisiones <- Datos_Emisiones %>% filter(between(Year,2005,2020))
 fDatos_Emisiones
 
-# Modificación de tablas --------------------------------------------
 
+# Modificación de tablas --------------------------------------------
+# Seleccionamos y renombramos las columnas de interés.
 
 # * Clima -----------------------------------------------------------------
 # Modificamos la tabla del clima para quitar la columna de desviación y cambiamos el nombre de las columnas
@@ -167,22 +167,6 @@ Sectores_Suicidio2 <- Sectores_Suicidio2 %>% filter(Region=='Europe')
 Sectores_Suicidio2 
 
 
-
-SS2 <- pivot_wider(data = Sectores_Suicidio2, names_from = "Sexo", values_from = "Tasa_suicidio")
-SS2 
-
-SS3 <- pivot_longer(data = SS2, names_to = "Sectores", values_to = "Porcentaje_Sector", cols = c(Empleo_Agricultura:Empleo_Servicios))
-SS3
-
-SS3<-SS3 %>% filter(Año==2013)%>% select(Pais,Año,Female,Sectores,Porcentaje_Sector)
-
-# Mujeres (Female)
-# Gráfico en el que solo se muestran los porcentajes de los sectores por paises
-g1 <- ggplot(data = SS3, mapping=aes(x =Pais, y=Porcentaje_Sector)) +
-  geom_col(aes(fill = Sectores), position = "dodge") + 
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
-g1
-
 # ggplot(data = Sectores_Suicidio2, mapping=aes(x =Pais, y=Porcentaje_Sector)) +
 #   geom_col(aes(fill = Sectores), position = "dodge")
 
@@ -200,7 +184,7 @@ g2
 # ---MAL---
 # Hay que averiguar como superponer las 2 gráficas que hemos hecho antes (g1 y g2)
 #
-# ggplot(data = SS3, mapping=aes(x =Pais, y=Porcentaje_Sector)) +
+# ggplot(data = ss2, mapping=aes(x =Pais, y=Porcentaje_Sector)) +
 #   geom_col(aes(fill = Sectores), position = "dodge") +
 #   #ggplot(data = Sectores_Suicidio2, aes(x = Pais, y = Tasa_suicidio)) +
 #   geom_point(aes(colour = factor(Sexo)))
