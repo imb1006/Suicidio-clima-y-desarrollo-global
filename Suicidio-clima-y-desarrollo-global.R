@@ -166,15 +166,17 @@ Sectores_Suicidio2 <-right_join(x=Sectores2, y=Suicidio)
 Sectores_Suicidio2 <- Sectores_Suicidio2 %>% filter(Region=='Europe')
 Sectores_Suicidio2 
 
-SS2 <- Sectores_Suicidio2 %>% 
-  pivot_wider(names_from = "Sexo", values_from = "Tasa_suicidio") %>% 
+SS2 <- pivot_wider(data = Sectores_Suicidio2, names_from = "Sexo", values_from = "Tasa_suicidio")
+SS2 
+
+SS3 <- SS2 %>% 
   pivot_longer(names_to = "Sectores", values_to = "Porcentaje_Sector", cols = c(Empleo_Agricultura:Empleo_Servicios)) %>% 
   filter(Año==2013) %>% 
   select(Pais,Año,Female,Sectores,Porcentaje_Sector)
 
 # Mujeres (Female)
 # Gráfico en el que solo se muestran los porcentajes de los sectores por paises
-g1 <- ggplot(data = SS2, mapping=aes(x =Pais, y=Porcentaje_Sector)) +
+g1 <- ggplot(data = SS3, mapping=aes(x =Pais, y=Porcentaje_Sector)) +
   geom_col(aes(fill = Sectores), position = "dodge") + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 g1
@@ -201,6 +203,48 @@ g2
 #   geom_col(aes(fill = Sectores), position = "dodge") +
 #   #ggplot(data = Sectores_Suicidio2, aes(x = Pais, y = Tasa_suicidio)) +
 #   geom_point(aes(colour = factor(Sexo)))
+
+#Gráfico comparación nivel de industrialización con el aumento de la tasa de suicidios en países de Europa
+#SS2 %>% select(Female)
+g3_mujer <- ggplot(data =SS2 %>% select(Pais,Empleo_Industria,Female), aes(x = Empleo_Industria, y = Female)) +
+  geom_point(aes(colour = factor(Pais)))+
+  geom_smooth(method = "lm", colour = "red")
+g3_mujer
+
+g3_hombre <- ggplot(data =SS2 %>% select(Pais,Empleo_Industria,Male), aes(x = Empleo_Industria, y = Male)) +
+  geom_point(aes(colour = factor(Pais)))+
+  geom_smooth(method = "lm", colour = "red")
+g3_hombre
+
+g3_AS <- ggplot(data =SS2 %>% select(Pais,Empleo_Industria,`Both sexes`), aes(x = Empleo_Industria, y = `Both sexes`)) +
+  geom_point(aes(colour = factor(Pais)))+
+  geom_smooth(method = "lm", colour = "red")
+g3_AS
+
+# Gráfico comparación nivel de industrialización con el aumento de la tasa de suicidios en países del mundo
+Sectores3 <- Sectores %>% filter(Año==2013)
+Sectores3
+
+Sectores_Suicidio3 <-right_join(x=Sectores3, y=Suicidio)
+
+SS4 <- Sectores_Suicidio3 %>% 
+  pivot_wider(names_from = "Sexo", values_from = "Tasa_suicidio")
+SS4
+
+g4_mujer <- ggplot(data =SS4 %>% select(Pais,Empleo_Industria,Female), aes(x = Empleo_Industria, y = Female)) +
+  geom_point(aes(colour = factor(Pais)),show.legend = FALSE)+
+  geom_smooth(method = "lm", colour = "red")
+g4_mujer
+
+g4_hombre <- ggplot(data =SS4 %>% select(Pais,Empleo_Industria,Male), aes(x = Empleo_Industria, y = Male)) +
+  geom_point(aes(colour = factor(Pais)),show.legend = FALSE)+
+  geom_smooth(method = "lm", colour = "red")
+g4_hombre
+
+g4_AS <- ggplot(data =SS4 %>% select(Pais,Empleo_Industria,`Both sexes`), aes(x = Empleo_Industria, y = `Both sexes`)) +
+  geom_point(aes(colour = factor(Pais)),show.legend = FALSE)+
+  geom_smooth(method = "lm", colour = "red")
+g4_AS
 
 
 # *Análisis del aumento de emisiones de CO2 y su impacto en la temperatura media de una región/país.-----  
