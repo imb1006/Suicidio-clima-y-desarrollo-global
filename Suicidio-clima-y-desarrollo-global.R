@@ -166,6 +166,19 @@ Sectores_Suicidio2 <-right_join(x=Sectores2, y=Suicidio)
 Sectores_Suicidio2 <- Sectores_Suicidio2 %>% filter(Region=='Europe')
 Sectores_Suicidio2 
 
+SS2 <- Sectores_Suicidio2 %>% 
+  pivot_wider(names_from = "Sexo", values_from = "Tasa_suicidio") %>% 
+  pivot_longer(names_to = "Sectores", values_to = "Porcentaje_Sector", cols = c(Empleo_Agricultura:Empleo_Servicios)) %>% 
+  filter(Año==2013) %>% 
+  select(Pais,Año,Female,Sectores,Porcentaje_Sector)
+
+# Mujeres (Female)
+# Gráfico en el que solo se muestran los porcentajes de los sectores por paises
+g1 <- ggplot(data = SS2, mapping=aes(x =Pais, y=Porcentaje_Sector)) +
+  geom_col(aes(fill = Sectores), position = "dodge") + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+g1
+
 
 # ggplot(data = Sectores_Suicidio2, mapping=aes(x =Pais, y=Porcentaje_Sector)) +
 #   geom_col(aes(fill = Sectores), position = "dodge")
