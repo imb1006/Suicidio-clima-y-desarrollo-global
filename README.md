@@ -1,1 +1,1 @@
-# Suicidio-clima-y-desarrollo-global
+# Suicidio, clima y desarrollo global
