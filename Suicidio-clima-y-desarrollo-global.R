@@ -139,22 +139,22 @@ Sectores
 # Elegimos países con mayor tasa de industrialización:
 Sectores
 
-#***Primera Forma ....................----
-Sectores1 <- Sectores %>% filter(Año==2013) %>% filter(Empleo_Industria>=35)
-Sectores1
-
-Suicidio
-Sectores_Suicidio <-left_join(x=Sectores1, y=Suicidio)
-Sectores_Suicidio
-
-# SS <- Sectores_Suicidio %>% select(Pais, Sexo, Tasa_suicidio)
-# SS
-
-# ggplot(data = SS, mapping=aes(x =Pais, y=Tasa_suicidio)) +
+# #***Primera Forma ....................----
+# Sectores1 <- Sectores %>% filter(Año==2013) %>% filter(Empleo_Industria>=35)
+# Sectores1
+# 
+# Suicidio
+# Sectores_Suicidio <-left_join(x=Sectores1, y=Suicidio)
+# Sectores_Suicidio
+# 
+# # SS <- Sectores_Suicidio %>% select(Pais, Sexo, Tasa_suicidio)
+# # SS
+# 
+# # ggplot(data = SS, mapping=aes(x =Pais, y=Tasa_suicidio)) +
+# #   geom_col(aes(fill = Sexo), position = "dodge") 
+# 
+# ggplot(data = Sectores_Suicidio, mapping=aes(x =Pais, y=Tasa_suicidio)) +
 #   geom_col(aes(fill = Sexo), position = "dodge") 
-
-ggplot(data = Sectores_Suicidio, mapping=aes(x =Pais, y=Tasa_suicidio)) +
-  geom_col(aes(fill = Sexo), position = "dodge") 
 
 #***Segunda Forma (BUENA?)....................----
 Sectores2 <- Sectores %>% filter(Año==2013)
@@ -170,14 +170,16 @@ Sectores_Suicidio2
 
 # ***Forma Buena (P) ------------------------------------------------------
 
-Sectores_Suicidio2 %>% 
+Objetivo3 <- Sectores_Suicidio2 %>% 
   pivot_longer(cols = starts_with("Empleo_"),names_to = "Sectores",values_to = "Porcentaje") %>% 
-  ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
+  filter(Sexo!='Both sexes') %>% ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
   geom_point(aes(colour=Sectores))+
   geom_smooth(aes(colour=Sectores))+
-  facet_wrap(~Sexo)
+  facet_wrap(~Sexo, scales='free_y')
 
-#Para mujeres...SUBIRRRRR
+Objetivo3
+
+#Para mujeres gráfico separado
 Sectores_Suicidio2 %>% 
   pivot_longer(cols = starts_with("Empleo_"),names_to = "Sectores",values_to = "Porcentaje") %>% 
   filter(Sexo=='Female') %>% 
@@ -185,7 +187,7 @@ Sectores_Suicidio2 %>%
   geom_point(aes(colour=Sectores))+
   geom_smooth(aes(colour=Sectores))
 
-#Para hombres...SUBIRRRRR
+#Para hombres gráfico separado
 Sectores_Suicidio2 %>% 
   pivot_longer(cols = starts_with("Empleo_"),names_to = "Sectores",values_to = "Porcentaje") %>% 
   filter(Sexo=='Male') %>% 
