@@ -38,7 +38,7 @@ fDatos_Sectores <- Datos_Sectores %>% filter(between(Year,2005,2013))
 fDatos_Sectores
 
 #Datos de las emisiones de CO2
-fDatos_Emisiones <- Datos_Emisiones %>% filter(between(Year,2005,2020))
+fDatos_Emisiones <- Datos_Emisiones %>% filter(between(Year,2005,2013))
 fDatos_Emisiones
 
 
@@ -47,55 +47,18 @@ fDatos_Emisiones
 
 # * Clima -----------------------------------------------------------------
 # Modificamos la tabla del clima para quitar la columna de desviación y cambiamos el nombre de las columnas
-colnames(fDatos_Clima)<-c("Fecha","Temperatura","DesviacionTemperatura","País")
+colnames(fDatos_Clima)<-c("Fecha","Temperatura","DesviacionTemperatura","Pais")
 fDatos_Clima
 
-
-fDatos_Clima2005<- fDatos_Clima %>% filter(between(Fecha,as.Date("2005-01-01"),as.Date("2005-12-31"))) %>% mutate(Año= "2005")
-fDatos_Clima2005
-
-fDatos_Clima2006 <- fDatos_Clima %>% filter(between(Fecha,as.Date("2006-01-01"),as.Date("2006-12-31"))) %>% mutate(Año= "2006")
-fDatos_Clima2006
-
-fDatos_Clima2007 <- fDatos_Clima %>% filter(between(Fecha,as.Date("2007-01-01"),as.Date("2007-12-31"))) %>% mutate(Año= "2007")
-fDatos_Clima2007
-
-fDatos_Clima2008 <- fDatos_Clima %>% filter(between(Fecha,as.Date("2008-01-01"),as.Date("2008-12-31"))) %>% mutate(Año= "2008")
-fDatos_Clima2008
-
-fDatos_Clima2009 <- fDatos_Clima %>% filter(between(Fecha,as.Date("2009-01-01"),as.Date("2009-12-31"))) %>% mutate(Año= "2009")
-fDatos_Clima2009
-
-fDatos_Clima2010 <- fDatos_Clima %>% filter(between(Fecha,as.Date("2010-01-01"),as.Date("2010-12-31"))) %>% mutate(Año= "2010")
-fDatos_Clima2010
-
-fDatos_Clima2011 <- fDatos_Clima %>% filter(between(Fecha,as.Date("2011-01-01"),as.Date("2011-12-31"))) %>% mutate(Año= "2011")
-fDatos_Clima2011
-
-fDatos_Clima2012 <- fDatos_Clima %>% filter(between(Fecha,as.Date("2012-01-01"),as.Date("2012-12-31"))) %>% mutate(Año= "2012")
-fDatos_Clima2012
-
-fDatos_Clima2013 <- fDatos_Clima %>% filter(between(Fecha,as.Date("2013-01-01"),as.Date("2013-12-31"))) %>% mutate(Año= "2013")
-fDatos_Clima2013
-
-# No hemos conseguido hacerlo todo en la misma tabla por eso hemos hecho una tabla para cada año y luego las hemos unido.
-
-f1Datos_Clima <-full_join(x=fDatos_Clima2005,y=full_join(x=fDatos_Clima2006,y=full_join(x=fDatos_Clima2007,y=full_join(x=fDatos_Clima2008,y=full_join(x=fDatos_Clima2009,y=full_join(x=fDatos_Clima2010,y=full_join(x=fDatos_Clima2011,y=full_join(x=fDatos_Clima2012,y=fDatos_Clima2013))))))))
-f1Datos_Clima
-#View(f1Datos_Clima)
-
 # Vamos a llamar mDatos_Clima, porque está agrupado por meses
-mDatos_Clima<-f1Datos_Clima %>% select(Fecha,Temperatura,País,Año)
-mDatos_Clima
+mDatos_Clima<- fDatos_Clima %>% 
+  mutate(Año= as.integer(format(Fecha,'%Y')))  %>% 
+  select(Fecha,Temperatura,Pais,Año)
 
 # Hasta aquí tenemos los datos por meses, ahora tenemos que hacer la media por años. Utilizamos un group_by por País y año
-Clima <- mDatos_Clima %>% group_by(País,Año) %>% summarise(Temperatura_Media=mean(Temperatura,na.rm=TRUE))
+Clima <- mDatos_Clima %>% group_by(Pais,Año) %>% summarise(Temperatura_Media=mean(Temperatura,na.rm=TRUE))
 Clima
 #View(Clima)
-
-# Cambio el tipo de la columna Año en la tabla Clima, de character a double/integer.
-Clima <- mutate(Clima,Año=as.integer(Año))
-Clima
 
 
 # * Suicidio --------------------------------------------------------------
@@ -237,48 +200,121 @@ g2
 
 #Gráfico comparación nivel de industrialización con el aumento de la tasa de suicidios en países de Europa
 #SS2 %>% select(Female)
-g3_mujer <- ggplot(data =SS2 %>% select(Pais,Empleo_Industria,Female), aes(x = Empleo_Industria, y = Female)) +
-  geom_point(aes(colour = factor(Pais)))+
-  geom_smooth(method = "lm", colour = "red")
-g3_mujer
 
-g3_hombre <- ggplot(data =SS2 %>% select(Pais,Empleo_Industria,Male), aes(x = Empleo_Industria, y = Male)) +
-  geom_point(aes(colour = factor(Pais)))+
-  geom_smooth(method = "lm", colour = "red")
-g3_hombre
-
-g3_AS <- ggplot(data =SS2 %>% select(Pais,Empleo_Industria,`Both sexes`), aes(x = Empleo_Industria, y = `Both sexes`)) +
-  geom_point(aes(colour = factor(Pais)))+
-  geom_smooth(method = "lm", colour = "red")
-g3_AS
+#Quitar?-----
+# g3_mujer <- ggplot(data =SS2 %>% select(Pais,Empleo_Industria,Female), aes(x = Empleo_Industria, y = Female)) +
+#   geom_point(aes(colour = factor(Pais)))+
+#   geom_smooth(method = "lm", colour = "red")
+# g3_mujer
+# 
+# g3_hombre <- ggplot(data =SS2 %>% select(Pais,Empleo_Industria,Male), aes(x = Empleo_Industria, y = Male)) +
+#   geom_point(aes(colour = factor(Pais)))+
+#   geom_smooth(method = "lm", colour = "red")
+# g3_hombre
+# 
+# g3_AS <- ggplot(data =SS2 %>% select(Pais,Empleo_Industria,`Both sexes`), aes(x = Empleo_Industria, y = `Both sexes`)) +
+#   geom_point(aes(colour = factor(Pais)),show.legend = FALSE)+
+#   geom_smooth(method = "lm", colour = "red")
+# g3_AS
 
 # Gráfico comparación nivel de industrialización con el aumento de la tasa de suicidios en países del mundo
-Sectores3 <- Sectores %>% filter(Año==2013)
-Sectores3
 
-Sectores_Suicidio3 <-right_join(x=Sectores3, y=Suicidio)
+#Quitar?-----
+# Sectores3 <- Sectores %>% filter(Año==2013)
+# Sectores3
+# 
+# Sectores_Suicidio3 <-right_join(x=Sectores3, y=Suicidio)
+# 
+# SS4 <- Sectores_Suicidio3 %>% 
+#   pivot_wider(names_from = "Sexo", values_from = "Tasa_suicidio")
+# SS4
+# 
+# g4_mujer <- ggplot(data =SS4 %>% select(Pais,Empleo_Industria,Female), aes(x = Empleo_Industria, y = Female)) +
+#   geom_point(aes(colour = factor(Pais)),show.legend = FALSE)+
+#   geom_smooth(method = "lm", colour = "red")
+# g4_mujer
+# 
+# g4_hombre <- ggplot(data =SS4 %>% select(Pais,Empleo_Industria,Male), aes(x = Empleo_Industria, y = Male)) +
+#   geom_point(aes(colour = factor(Pais)),show.legend = FALSE)+
+#   geom_smooth(method = "lm", colour = "red")
+# g4_hombre
+# 
+# g4_AS <- ggplot(data =SS4 %>% select(Pais,Empleo_Industria,`Both sexes`), aes(x = Empleo_Industria, y = `Both sexes`)) +
+#   geom_point(aes(colour = factor(Pais)),show.legend = FALSE)+
+#   geom_smooth(method = "lm", colour = "red")
+# g4_AS
 
-SS4 <- Sectores_Suicidio3 %>% 
-  pivot_wider(names_from = "Sexo", values_from = "Tasa_suicidio")
-SS4
 
-g4_mujer <- ggplot(data =SS4 %>% select(Pais,Empleo_Industria,Female), aes(x = Empleo_Industria, y = Female)) +
-  geom_point(aes(colour = factor(Pais)),show.legend = FALSE)+
-  geom_smooth(method = "lm", colour = "red")
-g4_mujer
+# *Análisis del aumento de emisiones de CO2 y su impacto en la temperatura media de una región/país.----- 
 
-g4_hombre <- ggplot(data =SS4 %>% select(Pais,Empleo_Industria,Male), aes(x = Empleo_Industria, y = Male)) +
-  geom_point(aes(colour = factor(Pais)),show.legend = FALSE)+
-  geom_smooth(method = "lm", colour = "red")
-g4_hombre
+C_O4<- Datos_Clima %>% 
+  filter(between(dt,as.Date("1970-01-01"),as.Date("2013-12-31")))
+colnames(C_O4)<-c("Fecha","Temperatura","DesviacionTemperatura","Pais")
 
-g4_AS <- ggplot(data =SS4 %>% select(Pais,Empleo_Industria,`Both sexes`), aes(x = Empleo_Industria, y = `Both sexes`)) +
-  geom_point(aes(colour = factor(Pais)),show.legend = FALSE)+
-  geom_smooth(method = "lm", colour = "red")
-g4_AS
+Clima_Obj_4 <-  C_O4%>% 
+  mutate(Año= as.integer(format(Fecha,'%Y'))) %>% 
+  select(Fecha,Temperatura,Pais,Año) %>% 
+  group_by(Pais,Año) %>% summarise(Temperatura_Media=mean(Temperatura,na.rm=TRUE))
 
 
-# *Análisis del aumento de emisiones de CO2 y su impacto en la temperatura media de una región/país.-----  
+Contaminacion_Obj4<- Datos_Emisiones %>% 
+  filter(between(Year,1970,2013))%>%
+  select(Entity, Year, `Annual CO2 emissions`) %>%
+  rename(Pais = Entity, Año = Year, Emisiones_Anuales = `Annual CO2 emissions`) %>%
+  mutate(Año = as.integer(Año))
 
 
-# *Comparación de las tasas de suicidio en países desarrollados, en vías de desarrollo y subdesarrollados. Análisis sectorial.-----
+Clima_Obj_4
+Contaminacion_Obj4
+
+
+# IMPORTANTE: HAY QUE CAMBIAR EN LA TABLA CLIMA LA COLUMNA País A Pais
+
+#Solo cogemos las tablas que necesitamos: Clima y Contaminacion
+levels(factor(Clima_Obj_4$Pais))
+levels(factor(Contaminacion_Obj4$Pais))
+
+CC <- left_join(x=Contaminacion_Obj4, y=Clima_Obj_4 )
+
+CC_Paises <- pivot_longer(CC, names_to = 'CO2_T', values_to = 'Valores', cols=c(Emisiones_Anuales, Temperatura_Media))
+
+# Estaría guay que la persona introdujera el país que quisiera en algun momento  (escribiendo o mediante un desplegable que tenga lso niveles de países) 
+# y fuese ese el país que filtrasemos. Se hace con taps, poniendo en el rMArkdown: 
+# '### select the paramether{.tabset .tabset-fade .tabset-pills}'
+# '#### Títulos de las gráficas'
+
+
+# Por el momento elegiremos un país en desarrollo como India
+
+CC_Paises %>% 
+  filter(Pais =='India') %>% 
+  ggplot(aes(x=Año, y=Valores))+
+  geom_point(aes(colour=CO2_T),show.legend=FALSE)+
+  geom_smooth(aes(colour=CO2_T),show.legend=FALSE)+
+  #facet_wrap(~Pais)+
+  facet_wrap(~CO2_T, scales='free_y')
+
+
+
+CC_Paises %>% 
+  filter(Pais =='India'| Pais=='Spain') %>% 
+  ggplot(aes(x=Año, y=Valores))+
+  geom_point(aes(colour=CO2_T),show.legend=FALSE)+
+  geom_smooth(aes(colour=CO2_T),show.legend=FALSE)+
+  facet_wrap(vars(Pais,CO2_T), scales='free_y')
+
+
+#Lo mismo pero en vez de para un país concreto para el mundo entero, se espera que aumente
+CC_Mundo<- CC %>%
+  group_by(Año)%>% 
+  summarise(Emisiones_Mundo= mean(Emisiones_Anuales, na.rm=TRUE), Temperatura_Mundo= mean(Temperatura_Media, na.rm= TRUE))
+
+CC_Mundo
+
+CC_Mundo %>%
+  pivot_longer(names_to = 'CO2_T', values_to = 'Valores', cols=c(Emisiones_Mundo, Temperatura_Mundo)) %>% 
+  ggplot(aes(x=Año, y=Valores))+
+  geom_point(aes(colour=CO2_T), show.legend=FALSE)+
+  geom_smooth(aes(colour=CO2_T), show.legend = FALSE) +
+  facet_wrap(vars(CO2_T), scales='free_y')
+
