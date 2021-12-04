@@ -46,6 +46,7 @@ fDatos_Emisiones
 # Seleccionamos y renombramos las columnas de interés.
 
 # * Clima -----------------------------------------------------------------
+
 # Modificamos la tabla del clima para quitar la columna de desviación y cambiamos el nombre de las columnas
 colnames(fDatos_Clima)<-c("Fecha","Temperatura","DesviacionTemperatura","Pais")
 fDatos_Clima
@@ -55,10 +56,10 @@ mDatos_Clima<- fDatos_Clima %>%
   mutate(Año= as.integer(format(Fecha,'%Y')))  %>% 
   select(Fecha,Temperatura,Pais,Año)
 
-# Hasta aquí tenemos los datos por meses, ahora tenemos que hacer la media por años. Utilizamos un group_by por País y año
+# Hasta aquí tenemos los datos por meses, ahora tenemos que hacer la media por años. Utilizamos un group_by 
+#por País y año
 Clima <- mDatos_Clima %>% group_by(Pais,Año) %>% summarise(Temperatura_Media=mean(Temperatura,na.rm=TRUE))
 Clima
-#View(Clima)
 
 
 # * Suicidio --------------------------------------------------------------
@@ -69,8 +70,11 @@ Suicidio <- fDatos_Suicidio %>%
   mutate(Año = as.integer(Año))
 Suicidio
 
+
 # * Emisiones CO2 --------------------------------------------------------------
-# Se crea un tibble "Contaminación" que almacena las columnas con las que se va a trabajar de "fDatos_Emisiones" y se renombran las columnas para que tengan los mismos nombres que el resto de tablas.
+
+# Se crea un tibble "Contaminación" que almacena las columnas con las que se va a trabajar de "fDatos_Emisiones"
+#y se renombran las columnas para que tengan los mismos nombres que el resto de tablas.
 
 Contaminacion <- fDatos_Emisiones %>%
   select(Entity, Year, `Annual CO2 emissions`) %>%
@@ -80,7 +84,8 @@ Contaminacion
 
   
 # * Sectores Laborales --------------------------------------------------------------
-# Se crea un tibble "Sectores" que almacena las columnas con las que se va a trabajar de "fDatos_Sectores" y se renombran las columnas para que tengan los mismos nombres que el resto de tablas.
+# Se crea un tibble "Sectores" que almacena las columnas con las que se va a trabajar de "fDatos_Sectores" 
+#y se renombran las columnas para que tengan los mismos nombres que el resto de tablas.
 
 Sectores <- fDatos_Sectores %>%
   select(Entity, Year, `Employment in agriculture (% of total employment) (modeled ILO estimate)`, `Employment in industry (% of total employment) (modeled ILO estimate)`, `Employment in services (% of total employment) (modeled ILO estimate)`) %>%
@@ -90,60 +95,79 @@ Sectores
 
 
 
-
-# OBJETIVOS ---------------------------------------------------------------
-# *Evaluar el impacto de la temperatura media anual de un país en su tasa global de suicidio.-------- 
+# Objetivos ---------------------------------------------------------------
 
 
-# *Estudiar la correlación entre los niveles de industrialización de un país (sector secundario) y sus tasas de emisión de CO2.-----  
+# * 1.Evaluar el impacto de la temperatura media anual de un país en su tasa global de suicidio.-------- 
+
+# Países disponibles en ambos set de datos:
+levels(factor(Clima$Pais))
+levels(factor(Suicidio$Pais))
+
+# Unimos los dos set de datos que vamos a utilizar obteniendo un tibble que contiene los países de 
+#la tabla "Suicidio", que era la que menos tenía.
+Clima_Suicidio <-left_join(x = Suicidio, y = Clima) %>% 
+  arrange(Pais, Año, Sexo)
+
+levels(factor(Clima_Suicidio$Pais))
+
+# Nota!! Todas las comparaciones entre países se van a realizar seleccionando países Europeos para poder
+#obtener una mejor visualización de la influencia de la temperatura en la tasa de suicidios, evitando que
+#factores mucho más influyentes (ej. nivel de industrialización) afecten al resultado.
+
+# Gráfica de dispersión de comparación entre varios países europeos
+Clima_Suicidio %>% 
+  filter(Tasa_suicidio > 0, Sexo == "Female") %>% 
+  filter( Pais == "Finland" | Pais == "Germany" | Pais == "Iceland" |
+           Pais == "Ireland" | Pais == "Italy" | Pais == "Netherlands" | Pais == "Norway" | Pais == "Poland" |
+           Pais == "Portugal" | Pais == "Spain" | Pais == "Sweden" ) %>% 
+  ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
+  geom_point(aes(colour = Pais))+
+  geom_smooth(aes(colour = Pais))+
+  labs(title = "Tasa de suicidio y temperatura en Europa",x = "Temperadura media", y = "Tasa de suicidio")
+
+# Gráficas de dispersión por cada país
+Clima_Suicidio %>% 
+  filter(Tasa_suicidio > 0, Sexo == "Female") %>% 
+  filter( Pais == "Finland" | Pais == "Germany" | Pais == "Iceland" |
+            Pais == "Ireland" | Pais == "Italy" | Pais == "Netherlands" | Pais == "Norway" | Pais == "Poland" |
+            Pais == "Portugal" | Pais == "Spain" | Pais == "Sweden" ) %>% 
+  ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
+  geom_point(aes(colour = Pais), show.legend = FALSE)+
+  geom_smooth(aes(colour = Pais), show.legend = FALSE)+
+  labs(x = "Temperadura media", y = "Tasa de suicidio")+
+  facet_wrap(vars(Pais))
 
 
-# *Evaluar si las tasas de suicidios son más elevadas en países preeminentemente industriales, y su asociación al sexo.-------
-# Elegimos países con mayor tasa de industrialización:
-Sectores
 
-# #***Primera Forma ....................----
-# Sectores1 <- Sectores %>% filter(Año==2013) %>% filter(Empleo_Industria>=35)
-# Sectores1
-# 
-# Suicidio
-# Sectores_Suicidio <-left_join(x=Sectores1, y=Suicidio)
-# Sectores_Suicidio
-# 
-# # SS <- Sectores_Suicidio %>% select(Pais, Sexo, Tasa_suicidio)
-# # SS
-# 
-# # ggplot(data = SS, mapping=aes(x =Pais, y=Tasa_suicidio)) +
-# #   geom_col(aes(fill = Sexo), position = "dodge") 
-# 
-# ggplot(data = Sectores_Suicidio, mapping=aes(x =Pais, y=Tasa_suicidio)) +
-#   geom_col(aes(fill = Sexo), position = "dodge") 
-
-#***Segunda Forma (BUENA?)....................----
-Sectores2 <- Sectores %>% filter(Año==2013)
-Sectores2
-
-Sectores_Suicidio2 <-right_join(x=Sectores2, y=Suicidio)
-# Lo hacemos con europa para una mejor visualizacion, pero hay que elegir los que más industria tengan 
-# y los que menos y compararlos
-Sectores_Suicidio2 <- Sectores_Suicidio2 %>% filter(Region=='Europe')
-Sectores_Suicidio2 
+# * 2.Estudiar la correlación entre los niveles de industrialización de un país (sector secundario) y sus tasas de emisión de CO2.-----  
 
 
 
-# ***Forma Buena (P) ------------------------------------------------------
+# * 3.Evaluar si las tasas de suicidios son más elevadas en países preeminentemente industriales, y su asociación al sexo.-------
 
-Objetivo3 <- Sectores_Suicidio2 %>% 
+# Nota!! Vamos a trabajar solo con países de Europa para una mejor visualización de los datos
+
+# Generamos un tibble que unifica los datos de sectores de empleo y de suicidio por países durante el año 2013 
+Sectores_Suicidio <- Sectores %>% 
+  filter(Año == 2013) %>% 
+  right_join(x=., y = Suicidio %>% 
+               filter(Año == 2013)) %>% 
+  filter(Region == "Europe")
+
+Sectores_Suicidio 
+
+# Gráfico de dispersión que muestra por separado las tasas de suicidios de hombres y mujeres según el % de
+#empleo que hay en cada sector en los países europeos.
+Sectores_Suicidio %>% 
   pivot_longer(cols = starts_with("Empleo_"),names_to = "Sectores",values_to = "Porcentaje") %>% 
   filter(Sexo!='Both sexes') %>% ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
   geom_point(aes(colour=Sectores))+
   geom_smooth(aes(colour=Sectores))+
   facet_wrap(~Sexo, scales='free_y')
 
-Objetivo3
-
 #Para mujeres gráfico separado
-Sectores_Suicidio2 %>% 
+Sectores_Suicidio %>% 
   pivot_longer(cols = starts_with("Empleo_"),names_to = "Sectores",values_to = "Porcentaje") %>% 
   filter(Sexo=='Female') %>% 
   ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
@@ -151,7 +175,7 @@ Sectores_Suicidio2 %>%
   geom_smooth(aes(colour=Sectores))
 
 #Para hombres gráfico separado
-Sectores_Suicidio2 %>% 
+Sectores_Suicidio %>% 
   pivot_longer(cols = starts_with("Empleo_"),names_to = "Sectores",values_to = "Porcentaje") %>% 
   filter(Sexo=='Male') %>% 
   ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
@@ -159,93 +183,7 @@ Sectores_Suicidio2 %>%
   geom_smooth(aes(colour=Sectores))
 
 
-
-SS2 <- pivot_wider(data = Sectores_Suicidio2, names_from = "Sexo", values_from = "Tasa_suicidio")
-SS2 
-
-SS3 <- SS2 %>% 
-  pivot_longer(names_to = "Sectores", values_to = "Porcentaje_Sector", cols = c(Empleo_Agricultura:Empleo_Servicios)) %>% 
-  filter(Año==2013) %>% 
-  select(Pais,Año,Female,Sectores,Porcentaje_Sector)
-
-# Mujeres (Female)
-# Gráfico en el que solo se muestran los porcentajes de los sectores por paises
-g1 <- ggplot(data = SS3, mapping=aes(x =Pais, y=Porcentaje_Sector)) +
-  geom_col(aes(fill = Sectores), position = "dodge") + 
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
-g1
-
-
-# ggplot(data = Sectores_Suicidio2, mapping=aes(x =Pais, y=Porcentaje_Sector)) +
-#   geom_col(aes(fill = Sectores), position = "dodge")
-
-
-#gráfico en el que se muestra la tasa de suicidios por paises:
-g2 <- ggplot(data = Sectores_Suicidio2 %>% filter(Año==2013), aes(x = Pais, y = Tasa_suicidio)) +
-  geom_point(aes(colour = factor(Sexo))) +
-  scale_color_discrete(labels = c("Ambos sexos", "Mujer", "Varón"))+ 
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))#+
-#facet_wrap(Pais)
-g2
-
-
-# PRUEBA DE SUMAR LAS GRÁFICAS DE PUNTOS CON LAS DE BARRAS
-# ---MAL---
-# Hay que averiguar como superponer las 2 gráficas que hemos hecho antes (g1 y g2)
-#
-# ggplot(data = ss2, mapping=aes(x =Pais, y=Porcentaje_Sector)) +
-#   geom_col(aes(fill = Sectores), position = "dodge") +
-#   #ggplot(data = Sectores_Suicidio2, aes(x = Pais, y = Tasa_suicidio)) +
-#   geom_point(aes(colour = factor(Sexo)))
-
-#Gráfico comparación nivel de industrialización con el aumento de la tasa de suicidios en países de Europa
-#SS2 %>% select(Female)
-
-#Quitar?-----
-# g3_mujer <- ggplot(data =SS2 %>% select(Pais,Empleo_Industria,Female), aes(x = Empleo_Industria, y = Female)) +
-#   geom_point(aes(colour = factor(Pais)))+
-#   geom_smooth(method = "lm", colour = "red")
-# g3_mujer
-# 
-# g3_hombre <- ggplot(data =SS2 %>% select(Pais,Empleo_Industria,Male), aes(x = Empleo_Industria, y = Male)) +
-#   geom_point(aes(colour = factor(Pais)))+
-#   geom_smooth(method = "lm", colour = "red")
-# g3_hombre
-# 
-# g3_AS <- ggplot(data =SS2 %>% select(Pais,Empleo_Industria,`Both sexes`), aes(x = Empleo_Industria, y = `Both sexes`)) +
-#   geom_point(aes(colour = factor(Pais)),show.legend = FALSE)+
-#   geom_smooth(method = "lm", colour = "red")
-# g3_AS
-
-# Gráfico comparación nivel de industrialización con el aumento de la tasa de suicidios en países del mundo
-
-#Quitar?-----
-# Sectores3 <- Sectores %>% filter(Año==2013)
-# Sectores3
-# 
-# Sectores_Suicidio3 <-right_join(x=Sectores3, y=Suicidio)
-# 
-# SS4 <- Sectores_Suicidio3 %>% 
-#   pivot_wider(names_from = "Sexo", values_from = "Tasa_suicidio")
-# SS4
-# 
-# g4_mujer <- ggplot(data =SS4 %>% select(Pais,Empleo_Industria,Female), aes(x = Empleo_Industria, y = Female)) +
-#   geom_point(aes(colour = factor(Pais)),show.legend = FALSE)+
-#   geom_smooth(method = "lm", colour = "red")
-# g4_mujer
-# 
-# g4_hombre <- ggplot(data =SS4 %>% select(Pais,Empleo_Industria,Male), aes(x = Empleo_Industria, y = Male)) +
-#   geom_point(aes(colour = factor(Pais)),show.legend = FALSE)+
-#   geom_smooth(method = "lm", colour = "red")
-# g4_hombre
-# 
-# g4_AS <- ggplot(data =SS4 %>% select(Pais,Empleo_Industria,`Both sexes`), aes(x = Empleo_Industria, y = `Both sexes`)) +
-#   geom_point(aes(colour = factor(Pais)),show.legend = FALSE)+
-#   geom_smooth(method = "lm", colour = "red")
-# g4_AS
-
-
-# *Análisis del aumento de emisiones de CO2 y su impacto en la temperatura media de una región/país.----- 
+# * 4.Análisis del aumento de emisiones de CO2 y su impacto en la temperatura media de una región/país.----- 
 
 C_O4<- Datos_Clima %>% 
   filter(between(dt,as.Date("1970-01-01"),as.Date("2013-12-31")))
@@ -267,8 +205,6 @@ Contaminacion_Obj4<- Datos_Emisiones %>%
 Clima_Obj_4
 Contaminacion_Obj4
 
-
-# IMPORTANTE: HAY QUE CAMBIAR EN LA TABLA CLIMA LA COLUMNA País A Pais
 
 #Solo cogemos las tablas que necesitamos: Clima y Contaminacion
 levels(factor(Clima_Obj_4$Pais))
@@ -293,7 +229,6 @@ CC_Paises %>%
   geom_smooth(aes(colour=CO2_T),show.legend=FALSE)+
   #facet_wrap(~Pais)+
   facet_wrap(~CO2_T, scales='free_y')
-
 
 
 CC_Paises %>% 
