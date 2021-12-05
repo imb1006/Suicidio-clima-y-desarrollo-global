@@ -22,49 +22,50 @@ Datos_Sectores
 Datos_Emisiones <- read_delim("INPUT/DATA/AnnualCO2EmissionsPerCountry.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
 Datos_Emisiones
 
-# Seleccionamos datos de los años de 2005 a 2013 -------------------------------------------
-#vamos a utilizar la letra 'f' de final, porque serán los datos que utilizaremos--> SE PUEDE CAMBIAR, NO DEFINITIVO ()
+# Selección de datos de 2005 a 2013 -------------------------------------------
+
+# El nombre del objeto contiene una "s" para indicar que esos datos ya han sido seleccionados según el año.
 
 #Datos del clima de 2005 a 2013
-fDatos_Clima <- Datos_Clima %>% filter(between(dt,as.Date("2005-01-01"),as.Date("2013-12-31"))) # hay que hacer algo con esto porque en este fichero es tipo date pero en los otros no (son tipo double)
-fDatos_Clima
+sDatos_Clima <- Datos_Clima %>% filter(between(dt,as.Date("2005-01-01"),as.Date("2013-12-31")))
+sDatos_Clima
 
 #Datos de suicidios
-fDatos_Suicidio <- Datos_Suicidio %>% filter(between(Period,2005,2013))
-fDatos_Suicidio
+sDatos_Suicidio <- Datos_Suicidio %>% filter(between(Period,2005,2013))
+sDatos_Suicidio
 
 #Datos de los distintos sectores de empleo
-fDatos_Sectores <- Datos_Sectores %>% filter(between(Year,2005,2013))
-fDatos_Sectores
+sDatos_Sectores <- Datos_Sectores %>% filter(between(Year,2005,2013))
+sDatos_Sectores
 
 #Datos de las emisiones de CO2
-fDatos_Emisiones <- Datos_Emisiones %>% filter(between(Year,2005,2013))
-fDatos_Emisiones
+sDatos_Emisiones <- Datos_Emisiones %>% filter(between(Year,2005,2013))
+sDatos_Emisiones
 
 
 # Modificación de tablas --------------------------------------------
 # Seleccionamos y renombramos las columnas de interés.
 
+
 # * Clima -----------------------------------------------------------------
 
 # Modificamos la tabla del clima para quitar la columna de desviación y cambiamos el nombre de las columnas
-colnames(fDatos_Clima)<-c("Fecha","Temperatura","DesviacionTemperatura","Pais")
-fDatos_Clima
+colnames(sDatos_Clima)<-c("Fecha","Temperatura","DesviacionTemperatura","Pais")
+sDatos_Clima
 
 # Vamos a llamar mDatos_Clima, porque está agrupado por meses
-mDatos_Clima<- fDatos_Clima %>% 
+mDatos_Clima<- sDatos_Clima %>% 
   mutate(Año= as.integer(format(Fecha,'%Y')))  %>% 
   select(Fecha,Temperatura,Pais,Año)
 
-# Hasta aquí tenemos los datos por meses, ahora tenemos que hacer la media por años. Utilizamos un group_by 
-#por País y año
+# Hacer la media por años utilizando un group_by por País y año
 Clima <- mDatos_Clima %>% group_by(Pais,Año) %>% summarise(Temperatura_Media=mean(Temperatura,na.rm=TRUE))
 Clima
 
 
 # * Suicidio --------------------------------------------------------------
-# Creamos un tibble "Suicidio" que almacena las columnas que nos interesan de "fDatos_Suicidio" renombradas.
-Suicidio <- fDatos_Suicidio %>% 
+# Creamos un tibble "Suicidio" que almacena las columnas que nos interesan de "sDatos_Suicidio" renombradas.
+Suicidio <- sDatos_Suicidio %>% 
   select(ParentLocation, Location, Period, Dim1, FactValueNumeric) %>% 
   rename(Region = ParentLocation, Pais = Location, Año = Period, Sexo = Dim1, Tasa_suicidio = FactValueNumeric) %>% 
   mutate(Año = as.integer(Año))
@@ -73,10 +74,10 @@ Suicidio
 
 # * Emisiones CO2 --------------------------------------------------------------
 
-# Se crea un tibble "Contaminación" que almacena las columnas con las que se va a trabajar de "fDatos_Emisiones"
+# Se crea un tibble "Contaminación" que almacena las columnas con las que se va a trabajar de "sDatos_Emisiones"
 #y se renombran las columnas para que tengan los mismos nombres que el resto de tablas.
 
-Contaminacion <- fDatos_Emisiones %>%
+Contaminacion <- sDatos_Emisiones %>%
   select(Entity, Year, `Annual CO2 emissions`) %>%
   rename(Pais = Entity, Año = Year, Emisiones_Anuales = `Annual CO2 emissions`) %>%
   mutate(Año = as.integer(Año))
@@ -84,10 +85,10 @@ Contaminacion
 
   
 # * Sectores Laborales --------------------------------------------------------------
-# Se crea un tibble "Sectores" que almacena las columnas con las que se va a trabajar de "fDatos_Sectores" 
+# Se crea un tibble "Sectores" que almacena las columnas con las que se va a trabajar de "sDatos_Sectores" 
 #y se renombran las columnas para que tengan los mismos nombres que el resto de tablas.
 
-Sectores <- fDatos_Sectores %>%
+Sectores <- sDatos_Sectores %>%
   select(Entity, Year, `Employment in agriculture (% of total employment) (modeled ILO estimate)`, `Employment in industry (% of total employment) (modeled ILO estimate)`, `Employment in services (% of total employment) (modeled ILO estimate)`) %>%
   rename(Pais = Entity, Año = Year, Empleo_Agricultura = `Employment in agriculture (% of total employment) (modeled ILO estimate)`, Empleo_Industria = `Employment in industry (% of total employment) (modeled ILO estimate)`, Empleo_Servicios = `Employment in services (% of total employment) (modeled ILO estimate)`) %>%
   mutate(Año = as.integer(Año))
@@ -135,7 +136,7 @@ Clima_Suicidio %>%
   ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
   geom_point(aes(colour = Pais), show.legend = FALSE)+
   geom_smooth(aes(colour = Pais), show.legend = FALSE)+
-  labs(x = "Temperadura media", y = "Tasa de suicidio")+
+  labs(title = "Tasa de suicidio y temperatura en Europa", x = "Temperadura media", y = "Tasa de suicidio")+
   facet_wrap(vars(Pais))
 
 

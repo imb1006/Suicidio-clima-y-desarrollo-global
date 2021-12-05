@@ -29,22 +29,151 @@ always_allow_html: true
 
 ------------------------------------------------------------------------
 
-## Introducción, objetivos y justificación
+# Introducción, objetivos y justificación
 
-#### Introducción
+#### **Introducción**
 
 A lo largo de este seminario, se pretende conocer la relación que existe entre ***factores climáticos***, el ***desarrollo socioeconómico*** de las distintas naciones y los ***índices de suicidio*** publicados.
 
-#### Objetivos
+#### **Objetivos**
 
 Inicialmente, se plantean una serie de objetivos de estudio, para los cuales se obtendrá respuesta tras el análisis correspondiente de los datos:
 
 1.  Evaluar el impacto de la temperatura media anual de un país en su tasa global de suicidio.\
 2.  Estudiar la correlación entre los niveles de industrialización de un país (sector secundario) y sus tasas de emisión de CO2.\
-3.  Evaluar si las tasas de suicidios son más elevadas en países preeminentemente industriales, y su asociación al sexo.\
+3.  Comparación de las tasas de suicidio según los distintos sectores de producción de cada país y su relación con el sexo.\
 4.  Análisis del aumento de emisiones de CO2 y su impacto en la temperatura media de una región/país.\
-5.  Comparación de las tasas de suicidio en países desarrollados, en vías de desarrollo y subdesarrollados. Análisis sectorial.
 
-#### Justificación del tema
+#### **Justificación del tema**
 
 La OMS define el suicidio como aquella acción mediante la cual un individuo se causa un daño a sí mismo, llegando a la muerte, sin tener en cuenta la intencionalidad y el conocimiento de los motivos. Sus características son la voluntariedad y la premeditación.
+
+
+```{r, echo=FALSE, message=FALSE, Codigo_Necesario}
+library(readr)
+library(tidyverse)
+library(dplyr)
+library(DT)
+
+Datos_Clima <- read_csv("INPUT/DATA/GlobalLandTemperaturesByCountry.csv")
+
+Datos_Suicidio <- read_csv("INPUT/DATA/SuicideGlobalRates.csv")
+
+Datos_Sectores <- read_delim("INPUT/DATA/EmploymentSectors.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
+
+Datos_Emisiones <- read_delim("INPUT/DATA/AnnualCO2EmissionsPerCountry.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
+
+# Selección de datos de 2005 a 2013 -------------------------------------------
+
+sDatos_Clima <- Datos_Clima %>% filter(between(dt,as.Date("2005-01-01"),as.Date("2013-12-31")))
+
+sDatos_Suicidio <- Datos_Suicidio %>% filter(between(Period,2005,2013))
+
+sDatos_Sectores <- Datos_Sectores %>% filter(between(Year,2005,2013))
+
+sDatos_Emisiones <- Datos_Emisiones %>% filter(between(Year,2005,2013))
+
+# Modificación de tablas --------------------------------------------
+
+# * Clima -----------------------------------------------------------------
+colnames(sDatos_Clima)<-c("Fecha","Temperatura","DesviacionTemperatura","Pais")
+
+mDatos_Clima<- sDatos_Clima %>% 
+  mutate(Año= as.integer(format(Fecha,'%Y')))  %>% 
+  select(Fecha,Temperatura,Pais,Año)
+
+Clima <- mDatos_Clima %>% group_by(Pais,Año) %>% summarise(Temperatura_Media=mean(Temperatura,na.rm=TRUE))
+
+# * Suicidio --------------------------------------------------------------
+Suicidio <- sDatos_Suicidio %>% 
+  select(ParentLocation, Location, Period, Dim1, FactValueNumeric) %>% 
+  rename(Region = ParentLocation, Pais = Location, Año = Period, Sexo = Dim1, Tasa_suicidio = FactValueNumeric) %>% 
+  mutate(Año = as.integer(Año))
+
+# * Emisiones CO2 --------------------------------------------------------------
+Contaminacion <- sDatos_Emisiones %>%
+  select(Entity, Year, `Annual CO2 emissions`) %>%
+  rename(Pais = Entity, Año = Year, Emisiones_Anuales = `Annual CO2 emissions`) %>%
+  mutate(Año = as.integer(Año))
+  
+# * Sectores Laborales --------------------------------------------------------------
+Sectores <- sDatos_Sectores %>%
+  select(Entity, Year, `Employment in agriculture (% of total employment) (modeled ILO estimate)`, `Employment in industry (% of total employment) (modeled ILO estimate)`, `Employment in services (% of total employment) (modeled ILO estimate)`) %>%
+  rename(Pais = Entity, Año = Year, Empleo_Agricultura = `Employment in agriculture (% of total employment) (modeled ILO estimate)`, Empleo_Industria = `Employment in industry (% of total employment) (modeled ILO estimate)`, Empleo_Servicios = `Employment in services (% of total employment) (modeled ILO estimate)`) %>%
+  mutate(Año = as.integer(Año))
+```
+
+# Visión general de los datos de trabajo
+
+### Clima
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(Clima)
+```
+
+### Suicidios
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(Suicidio)
+```
+
+### Emisiones CO2
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(Contaminacion)
+```
+
+### Sectores laborales
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(Sectores)
+```
+
+
+# Desarrollo de los objetivos
+
+## 1. Temperatura y suicidio.
+Evaluamos el impacto de la temperatura media anual de un país en su tasa global de suicidio para estudiar una posible relación.\
+Utilizaremos únicamente países Europeos, más similares entre sí respecto a otros factores que si empleáramos países de todo el mundo, para poder obtener una mejor visualización de la influencia de la temperatura en la tasa de suicidios, evitando que factores más influyentes (ej. nivel de industrialización) afecten al resultado.
+
+```{r, echo=FALSE, message=FALSE, Clima_Suicidio}
+Clima_Suicidio <-left_join(x = Suicidio, y = Clima) %>% 
+  arrange(Pais, Año, Sexo)
+```
+
+
+#### Selecciona visualización{.tabset .tabset-fade .tabset-pills}
+##### Conjunto_Paises
+```{r, echo=FALSE, message=FALSE, Conjunto_Paises}
+Clima_Suicidio %>% 
+  filter(Tasa_suicidio > 0, Sexo == "Female") %>% 
+  filter( Pais == "Finland" | Pais == "Germany" | Pais == "Iceland" |
+           Pais == "Ireland" | Pais == "Italy" | Pais == "Netherlands" | Pais == "Norway" | Pais == "Poland" |
+           Pais == "Portugal" | Pais == "Spain" | Pais == "Sweden" ) %>% 
+  ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
+  geom_point(aes(colour = Pais))+
+  geom_smooth(aes(colour = Pais))+
+  labs(title = "Tasa de suicidio y temperatura en Europa",x = "Temperadura media", y = "Tasa de suicidio")
+```
+
+##### Paises_Separados
+```{r, echo=FALSE, message=FALSE, Paises_Separados}
+Clima_Suicidio %>% 
+  filter(Tasa_suicidio > 0, Sexo == "Female") %>% 
+  filter( Pais == "Finland" | Pais == "Germany" | Pais == "Iceland" |
+            Pais == "Ireland" | Pais == "Italy" | Pais == "Netherlands" | Pais == "Norway" | Pais == "Poland" |
+            Pais == "Portugal" | Pais == "Spain" | Pais == "Sweden" ) %>% 
+  ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
+  geom_point(aes(colour = Pais), show.legend = FALSE)+
+  geom_smooth(aes(colour = Pais), show.legend = FALSE)+
+  labs(title = "Tasa de suicidio y temperatura en Europa", x = "Temperadura media", y = "Tasa de suicidio")+
+  facet_wrap(vars(Pais))
+```
+
+#### **Conclusiones**
+En las gráficas obtenidas podemos visualizar cómo la tasa de suicidios aumenta en los países más fríos y disminuye en los más cálidos, por lo que podríamos indicar que existe una relación inversamente proporcional entre tasa de suicidios y temperatura.\
+Inconveniente: aún habiendo analizado los datos no podemos asegurar que la conclusión a la que hemos llegado es 100% fiable ya que para ello se requieren muchos más análisis.
+
+## 2. Industrialización y emisión de CO2.
+
+## 3. Sectores de empleo y suicidio.
+
+## 4. Emisiones de CO2 y temperatura.
+
+
