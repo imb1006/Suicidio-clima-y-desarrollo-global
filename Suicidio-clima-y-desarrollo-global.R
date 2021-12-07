@@ -1,9 +1,9 @@
 # Importación de Datos ----------------------------------------------------
 
 # Importamos las librerías que vamos a utilizar
-library(readr)
+#library(readr)
 library(tidyverse)
-library(dplyr)
+#library(dplyr)
 
 # Carga de datos del clima desde 1700 a 2013:
 Datos_Clima <- read_csv("INPUT/DATA/GlobalLandTemperaturesByCountry.csv")
@@ -97,6 +97,12 @@ Sectores
 
 
 # Objetivos ---------------------------------------------------------------
+# Tema común para las gráficas
+Tema_Graficas<- theme_bw()+
+  theme(panel.border = element_rect(linetype = "solid", fill = NA, colour="grey70"),
+        strip.background = element_rect(colour = "grey75", fill = "grey95"),# Borde del titulo al hacer wrap
+        strip.text.x = element_text(colour = "grey25", face = "bold.italic", size = 11),
+        axis.text = element_text(colour = "grey40", size = 11))
 
 
 # * 1.Evaluar el impacto de la temperatura media anual de un país en su tasa global de suicidio.-------- 
@@ -145,7 +151,7 @@ Clima_Suicidio %>%
 
 
 
-# * 3.Evaluar si las tasas de suicidios son más elevadas en países preeminentemente industriales, y su asociación al sexo.-------
+# * 3.Comparación de las tasas de suicidio según los distintos sectores de producción de cada país y su relación con el sexo.-------
 
 # Nota!! Vamos a trabajar solo con países de Europa para una mejor visualización de los datos
 
@@ -159,29 +165,35 @@ Sectores_Suicidio <- Sectores %>%
 Sectores_Suicidio 
 
 # Gráfico de dispersión que muestra por separado las tasas de suicidios de hombres y mujeres según el % de
-#empleo que hay en cada sector en los países europeos.
+# empleo que hay en cada sector en los países europeos.
 Sectores_Suicidio %>% 
   pivot_longer(cols = starts_with("Empleo_"),names_to = "Sectores",values_to = "Porcentaje") %>% 
-  filter(Sexo!='Both sexes') %>% ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
+  filter(Sexo!='Both sexes') %>% drop_na() %>% ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
   geom_point(aes(colour=Sectores))+
   geom_smooth(aes(colour=Sectores))+
-  facet_wrap(~Sexo, scales='free_y')
+  facet_wrap(~Sexo, scales='free_y')+
+  labs(title = "Tasa de suicidios por sector en ambos sexos",x = "Porcentaje", y = "Tasa de suicidio por 100000 habitantes")+
+  Tema_Graficas
 
-#Para mujeres gráfico separado
+# Para mujeres gráfico separado
 Sectores_Suicidio %>% 
   pivot_longer(cols = starts_with("Empleo_"),names_to = "Sectores",values_to = "Porcentaje") %>% 
-  filter(Sexo=='Female') %>% 
+  filter(Sexo=='Female') %>% drop_na() %>% 
   ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
   geom_point(aes(colour=Sectores))+
-  geom_smooth(aes(colour=Sectores))
+  geom_smooth(aes(colour=Sectores))+
+  labs(title = "Tasa de suicidios por sector en mujeres",x = "Porcentaje", y = "Tasa de suicidio por 100000 habitantes")+
+  Tema_Graficas
 
-#Para hombres gráfico separado
+# Para hombres gráfico separado
 Sectores_Suicidio %>% 
   pivot_longer(cols = starts_with("Empleo_"),names_to = "Sectores",values_to = "Porcentaje") %>% 
-  filter(Sexo=='Male') %>% 
+  filter(Sexo=='Male') %>% drop_na() %>% 
   ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
   geom_point(aes(colour=Sectores))+
-  geom_smooth(aes(colour=Sectores))
+  geom_smooth(aes(colour=Sectores))+
+  labs(title = "Tasa de suicidios por sector en hombres",x = "Porcentaje", y = "Tasa de suicidio por 100000 habitantes")+
+  Tema_Graficas
 
 
 # * 4.Análisis del aumento de emisiones de CO2 y su impacto en la temperatura media de una región/país.----- 
@@ -229,7 +241,9 @@ CC_Paises %>%
   geom_point(aes(colour=CO2_T),show.legend=FALSE)+
   geom_smooth(aes(colour=CO2_T),show.legend=FALSE)+
   #facet_wrap(~Pais)+
-  facet_wrap(~CO2_T, scales='free_y')
+  facet_wrap(~CO2_T, scales='free_y')+
+  labs(title = "Tasa de emisiones y temperatura en India",x = "Años", y = " ")+
+  Tema_Graficas
 
 
 CC_Paises %>% 
@@ -237,7 +251,9 @@ CC_Paises %>%
   ggplot(aes(x=Año, y=Valores))+
   geom_point(aes(colour=CO2_T),show.legend=FALSE)+
   geom_smooth(aes(colour=CO2_T),show.legend=FALSE)+
-  facet_wrap(vars(Pais,CO2_T), scales='free_y')
+  facet_wrap(vars(Pais,CO2_T), scales='free_y')+
+  labs(title = "Tasa de emisiones y temperatura en India y en España",x = "Años", y = " ")+
+  Tema_Graficas
 
 
 #Lo mismo pero en vez de para un país concreto para el mundo entero, se espera que aumente
@@ -252,5 +268,7 @@ CC_Mundo %>%
   ggplot(aes(x=Año, y=Valores))+
   geom_point(aes(colour=CO2_T), show.legend=FALSE)+
   geom_smooth(aes(colour=CO2_T), show.legend = FALSE) +
-  facet_wrap(vars(CO2_T), scales='free_y')
+  facet_wrap(vars(CO2_T), scales='free_y')+
+  labs(title = "Tasa de emisiones y temperatura en el mundo",x = "Años", y = " ")+
+  Tema_Graficas
 

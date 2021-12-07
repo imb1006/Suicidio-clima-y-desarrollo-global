@@ -18,6 +18,7 @@ date: "`r format(Sys.time(),'%d %B, %Y')`"
 output: 
   html_document:
     df_print: paged
+    theme: journal
     toc: yes
     toc_float: yes
   pdf_document:
@@ -101,6 +102,13 @@ Sectores <- sDatos_Sectores %>%
   select(Entity, Year, `Employment in agriculture (% of total employment) (modeled ILO estimate)`, `Employment in industry (% of total employment) (modeled ILO estimate)`, `Employment in services (% of total employment) (modeled ILO estimate)`) %>%
   rename(Pais = Entity, Año = Year, Empleo_Agricultura = `Employment in agriculture (% of total employment) (modeled ILO estimate)`, Empleo_Industria = `Employment in industry (% of total employment) (modeled ILO estimate)`, Empleo_Servicios = `Employment in services (% of total employment) (modeled ILO estimate)`) %>%
   mutate(Año = as.integer(Año))
+
+#Tema de gráficas para los objetivos
+Tema_Graficas<- theme_bw()+
+  theme(panel.border = element_rect(linetype = "solid", fill = NA, colour="grey70"),
+        strip.background = element_rect(colour = "grey75", fill = "grey95"),# Borde del titulo al hacer wrap
+        strip.text.x = element_text(colour = "grey25", face = "bold.italic", size = 11),
+        axis.text = element_text(colour = "grey40", size = 11))
 ```
 
 # Visión general de los datos de trabajo
@@ -162,7 +170,7 @@ Clima_Suicidio %>%
   ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
   geom_point(aes(colour = Pais), show.legend = FALSE)+
   geom_smooth(aes(colour = Pais), show.legend = FALSE)+
-  labs(title = "Tasa de suicidio y temperatura en Europa", x = "Temperadura media", y = "Tasa de suicidio")+
+  labs(title = "Tasa de suicidio y temperatura en Europa", x = "Temperatura media", y = "Tasa de suicidio")+
   facet_wrap(vars(Pais))
 ```
 
@@ -173,7 +181,160 @@ Inconveniente: aún habiendo analizado los datos no podemos asegurar que la conc
 ## 2. Industrialización y emisión de CO2.
 
 ## 3. Sectores de empleo y suicidio.
+Añadir descripción objetivo 3
+
+```{r, echo=FALSE, message=FALSE, Sectores_Suicidio}
+Sectores_Suicidio <- Sectores %>% 
+  filter(Año == 2013) %>% 
+  right_join(x=., y = Suicidio %>% 
+               filter(Año == 2013)) %>% 
+  filter(Region == "Europe")
+```
+
+#### Elige visualización{.tabset .tabset-fade .tabset-pills}
+##### Mujeres
+```{r, echo=FALSE, message=FALSE, Sectores_Suicidio_mujeres}
+
+Sectores_Suicidio %>% 
+  pivot_longer(cols = starts_with("Empleo_"),names_to = "Sectores",values_to = "Porcentaje") %>% 
+  filter(Sexo=='Female') %>% drop_na() %>%
+  ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
+  geom_point(aes(colour=Sectores))+
+  geom_smooth(aes(colour=Sectores))+
+  labs(title = "Tasa de suicidios por sector en mujeres",x = "Porcentaje", y = "Tasa de suicidio por 100000 habitantes")+
+  Tema_Graficas
+```
+
+##### Hombres
+```{r, echo=FALSE, message=FALSE, Sectores_Suicidio_hombres}
+Sectores_Suicidio %>% 
+  pivot_longer(cols = starts_with("Empleo_"),names_to = "Sectores",values_to = "Porcentaje") %>% 
+  filter(Sexo=='Male') %>% drop_na() %>%
+  ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
+  geom_point(aes(colour=Sectores))+
+  geom_smooth(aes(colour=Sectores))+
+  labs(title = "Tasa de suicidios por sector en hombres",x = "Porcentaje", y = "Tasa de suicidio por 100000 habitantes")+
+  Tema_Graficas
+```
+
+
+#### **Conclusiones**
+En las gráficas obtenidas podemos visualizar cómo ...\
+
 
 ## 4. Emisiones de CO2 y temperatura.
+Añadir descripción del objetivo 4
 
 
+```{r, echo=FALSE, message=FALSE, Clima_Contaminacion}
+
+C_O4<- Datos_Clima %>% 
+  filter(between(dt,as.Date("1970-01-01"),as.Date("2013-12-31")))
+colnames(C_O4)<-c("Fecha","Temperatura","DesviacionTemperatura","Pais")
+
+Clima_Obj_4 <-  C_O4%>% 
+  mutate(Año= as.integer(format(Fecha,'%Y'))) %>% 
+  select(Fecha,Temperatura,Pais,Año) %>% 
+  group_by(Pais,Año) %>% summarise(Temperatura_Media=mean(Temperatura,na.rm=TRUE))
+
+Contaminacion_Obj4<- Datos_Emisiones %>% 
+  filter(between(Year,1970,2013))%>%
+  select(Entity, Year, `Annual CO2 emissions`) %>%
+  rename(Pais = Entity, Año = Year, Emisiones_Anuales = `Annual CO2 emissions`) %>%
+  mutate(Año = as.integer(Año))
+
+
+CC <- left_join(x=Contaminacion_Obj4, y=Clima_Obj_4 )
+
+CC_Paises <- pivot_longer(CC, names_to = 'CO2_T', values_to = 'Valores', cols=c(Emisiones_Anuales, Temperatura_Media))
+
+
+CC_Mundo<- CC %>%
+  group_by(Año)%>% 
+  summarise(Emisiones_Mundo= mean(Emisiones_Anuales, na.rm=TRUE), Temperatura_Mundo= mean(Temperatura_Media, na.rm= TRUE))
+
+```
+
+
+#### Mundo{.tabset .tabset-fade .tabset-pills}
+```{r, echo=FALSE, message=FALSE, Conjunto_Mundo}
+
+CC_Mundo %>%
+  pivot_longer(names_to = 'CO2_T', values_to = 'Valores', cols=c(Emisiones_Mundo, Temperatura_Mundo)) %>% 
+  ggplot(aes(x=Año, y=Valores))+
+  geom_point(aes(colour=CO2_T), show.legend=FALSE)+
+  geom_smooth(aes(colour=CO2_T), show.legend = FALSE) +
+  facet_wrap(vars(CO2_T), scales='free_y')+
+  labs(title = "Tasa de emisiones y temperatura en el mundo",x = "Años", y = " ")+
+  Tema_Graficas
+
+```
+
+##### España
+
+```{r, echo=FALSE, message=FALSE, Conjunto_España}
+CC_Paises %>% 
+  filter(Pais =='Spain') %>% 
+  ggplot(aes(x=Año, y=Valores))+
+  geom_point(aes(colour=CO2_T),show.legend=FALSE)+
+  geom_smooth(aes(colour=CO2_T),show.legend=FALSE)+
+  facet_wrap(~CO2_T, scales='free_y')+
+  labs(title = "Tasa de emisiones y temperatura en España",x = "Años", y = " ")+
+  Tema_Graficas
+
+```
+
+##### India
+```{r, echo=FALSE, message=FALSE, Conjunto_India}
+CC_Paises %>% 
+  filter(Pais =='India') %>% 
+  ggplot(aes(x=Año, y=Valores))+
+  geom_point(aes(colour=CO2_T),show.legend=FALSE)+
+  geom_smooth(aes(colour=CO2_T),show.legend=FALSE)+
+  facet_wrap(~CO2_T, scales='free_y')+
+  labs(title = "Tasa de emisiones y temperatura en India",x = "Años", y = " ")+
+  Tema_Graficas
+
+```
+
+##### China
+```{r, echo=FALSE, message=FALSE, Conjunto_China}
+CC_Paises %>% 
+  filter(Pais =='China') %>% 
+  ggplot(aes(x=Año, y=Valores))+
+  geom_point(aes(colour=CO2_T),show.legend=FALSE)+
+  geom_smooth(aes(colour=CO2_T),show.legend=FALSE)+
+  facet_wrap(~CO2_T, scales='free_y')+
+  labs(title = "Tasa de emisiones y temperatura en China",x = "Años", y = " ")+
+  Tema_Graficas
+
+```
+
+##### Canadá
+```{r, echo=FALSE, message=FALSE, Conjunto_Canada}
+CC_Paises %>% 
+  filter(Pais =='Canada') %>% 
+  ggplot(aes(x=Año, y=Valores))+
+  geom_point(aes(colour=CO2_T),show.legend=FALSE)+
+  geom_smooth(aes(colour=CO2_T),show.legend=FALSE)+
+  facet_wrap(~CO2_T, scales='free_y')+
+  labs(title = "Tasa de emisiones y temperatura en Canadá",x = "Años", y = " ")+
+  Tema_Graficas
+
+```
+
+##### Japón
+```{r, echo=FALSE, message=FALSE, Conjunto_Japon}
+CC_Paises %>% 
+  filter(Pais =='Japan') %>% 
+  ggplot(aes(x=Año, y=Valores))+
+  geom_point(aes(colour=CO2_T),show.legend=FALSE)+
+  geom_smooth(aes(colour=CO2_T),show.legend=FALSE)+
+  facet_wrap(~CO2_T, scales='free_y')+
+  labs(title = "Tasa de emisiones y temperatura en Japón",x = "Años", y = " ")+
+  Tema_Graficas
+
+```
+
+#### **Conclusiones**
+En las gráficas obtenidas podemos visualizar cómo ...
