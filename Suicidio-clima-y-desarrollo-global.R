@@ -1,5 +1,6 @@
 # Importación de Datos ----------------------------------------------------
 
+
 # Importamos las librerías que vamos a utilizar
 library(tidyverse)
 # Librerías ya incluidas en tidyverse:
@@ -121,7 +122,7 @@ levels(factor(Clima_Suicidio$Pais))
 
 # Nota!! Todas las comparaciones entre países se van a realizar seleccionando países Europeos para poder
 #obtener una mejor visualización de la influencia de la temperatura en la tasa de suicidios, evitando que
-#factores mucho más influyentes (ej. nivel de industrialización) afecten al resultado.
+#factores mucho más influyentes (ej. nivel de industrialización, nivel socioeconómico) afecten al resultado.
 
 # Gráfica de dispersión de comparación entre varios países europeos
 Clima_Suicidio %>% 
@@ -152,7 +153,29 @@ Clima_Suicidio %>%
 
 # * 2.Estudiar la correlación entre los niveles de industrialización de un país (sector secundario) y sus tasas de emisión de CO2.-----  
 
+# Países disponibles en ambos sets de datos:
+levels(factor(Contaminacion$Pais))
+levels(factor(Sectores$Pais))
 
+# Se unen los sets de datos, obteniendo un tibble que contiene los países de 
+#la tabla "Sectores", que era la que menos nombres contenía.
+
+# Nota!! Se va a realizar un doble análisis:
+# 2.1.- Ver la evolución de un país; es decir, si conforme aumenta la industrialización lo hacen también sus emisiones de CO2 y 
+# 2.2.- Una comparación entre países que no requiere de todo el periodo que aparece en los datos (2005 a 2013) por lo que se va a seleccionar únicamente un año, 2008
+
+# Nota!! Para asegurar que los datos no se vean influenciados por otras variables, se van a seleccionar solo los países que superen en un 25% el empleo basado en la industria
+
+Contaminacion_Industria <- Sectores %>%
+  filter(Año == 2008) %>%
+  left_join(x =., y = Contaminacion) %>% 
+  filter(Año == 2008) %>%
+  filter(Empleo_Industria >= 25.0)
+
+levels(factor(Contaminacion_Industria$Pais))
+
+#Falta añadir el tratamiento de los datos
+#Falta añadir las gráficas
 
 # * 3.Comparación de las tasas de suicidio según los distintos sectores de producción de cada país y su relación con el sexo.-------
 
