@@ -49,6 +49,8 @@ Inicialmente, se plantean una serie de objetivos de estudio, para los cuales se 
 
 La OMS define el suicidio como aquella acción mediante la cual un individuo se causa un daño a sí mismo, llegando a la muerte, sin tener en cuenta la intencionalidad y el conocimiento de los motivos. Sus características son la voluntariedad y la premeditación.
 
+Añadir más justificación y relacionarla con la contaminación y la temperatura
+
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, Codigo_Necesario}
 library(readr)
@@ -181,6 +183,13 @@ En las gráficas obtenidas podemos visualizar cómo la tasa de suicidios aumenta
 Inconveniente: aún habiendo analizado los datos no podemos asegurar que la conclusión a la que hemos llegado es 100% fiable ya que para ello se requieren muchos más análisis.
 
 ## 2. Industrialización y emisión de CO2.
+Estudio del impacto del sector industria, comúnmente denominado sector secundario, en la emisión de gases de efecto invernadero.\
+En la actualidad la mayoría de países basan su economía mayoritariamente en la agricultura (países subdesarrollados o en vías de desarrollo) y en el sector servicios (educación, salud, turismo,...)(países desarrollados). Por ello se ha considerado necesario realizar el estudio con datos porcentuales de industria superior al 25% para los países industrializados, que se compararán con los menores al 10%, tratando de reducir la influencia de otros factores en el análisis de los datos.\
+La hipótesis inicial es que aquellos países cuya industria tiene un peso considerable, tendrán tasas de emisión superiores.
+
+Falta incluir los datos y su análisis + conclusiones
+
+#### **Conclusiones**
 
 ## 3. Sectores de empleo y suicidio.
 Estudio del aumento o disminución de la tasa de suicidos en países europeos según la evolución del porcentaje de empleo en cada sector de trabajo.\
