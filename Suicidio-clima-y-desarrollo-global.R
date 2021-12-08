@@ -1,8 +1,9 @@
 # Importación de Datos ----------------------------------------------------
 
 # Importamos las librerías que vamos a utilizar
-#library(readr)
 library(tidyverse)
+# Librerías ya incluidas en tidyverse:
+#library(readr)
 #library(dplyr)
 
 # Carga de datos del clima desde 1700 a 2013:
@@ -131,7 +132,8 @@ Clima_Suicidio %>%
   ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
   geom_point(aes(colour = Pais))+
   geom_smooth(aes(colour = Pais))+
-  labs(title = "Tasa de suicidio y temperatura en Europa",x = "Temperadura media", y = "Tasa de suicidio")
+  labs(title = "Tasa de suicidio y temperatura en Europa",x = "Temperadura media en ºC", y = "Tasa de suicidio por 100000 habitantes")+
+  Tema_Graficas
 
 # Gráficas de dispersión por cada país
 Clima_Suicidio %>% 
@@ -142,8 +144,9 @@ Clima_Suicidio %>%
   ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
   geom_point(aes(colour = Pais), show.legend = FALSE)+
   geom_smooth(aes(colour = Pais), show.legend = FALSE)+
-  labs(title = "Tasa de suicidio y temperatura en Europa", x = "Temperadura media", y = "Tasa de suicidio")+
-  facet_wrap(vars(Pais))
+  labs(title = "Tasa de suicidio y temperatura en Europa", x = "Temperadura media en ºC", y = "Tasa de suicidio por 100000 habitantes")+
+  facet_wrap(vars(Pais))+
+  Tema_Graficas
 
 
 
@@ -164,35 +167,30 @@ Sectores_Suicidio <- Sectores %>%
 
 Sectores_Suicidio 
 
-# Gráfico de dispersión que muestra por separado las tasas de suicidios de hombres y mujeres según el % de
-# empleo que hay en cada sector en los países europeos.
-Sectores_Suicidio %>% 
-  pivot_longer(cols = starts_with("Empleo_"),names_to = "Sectores",values_to = "Porcentaje") %>% 
-  filter(Sexo!='Both sexes') %>% drop_na() %>% ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
-  geom_point(aes(colour=Sectores))+
-  geom_smooth(aes(colour=Sectores))+
-  facet_wrap(~Sexo, scales='free_y')+
-  labs(title = "Tasa de suicidios por sector en ambos sexos",x = "Porcentaje", y = "Tasa de suicidio por 100000 habitantes")+
-  Tema_Graficas
+# Representamos los datos en gráficos de dispersión que muestran la tasa de suicidio según el % de empleo que hay en cada sector
+#en los países europeos.
 
-# Para mujeres gráfico separado
+# Separamos los datos de mujeres y hombres porque los de estos últimos presentan una tasa de suicidio mucho mayor que creemos que
+#puede influenciar los resultados.
+
+# Mujeres
 Sectores_Suicidio %>% 
   pivot_longer(cols = starts_with("Empleo_"),names_to = "Sectores",values_to = "Porcentaje") %>% 
   filter(Sexo=='Female') %>% drop_na() %>% 
   ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
   geom_point(aes(colour=Sectores))+
   geom_smooth(aes(colour=Sectores))+
-  labs(title = "Tasa de suicidios por sector en mujeres",x = "Porcentaje", y = "Tasa de suicidio por 100000 habitantes")+
+  labs(title = "Tasa de suicidios por sector en mujeres",x = "Porcentaje empleo", y = "Tasa de suicidio por 100000 habitantes")+
   Tema_Graficas
 
-# Para hombres gráfico separado
+# Hombres
 Sectores_Suicidio %>% 
   pivot_longer(cols = starts_with("Empleo_"),names_to = "Sectores",values_to = "Porcentaje") %>% 
   filter(Sexo=='Male') %>% drop_na() %>% 
   ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
   geom_point(aes(colour=Sectores))+
   geom_smooth(aes(colour=Sectores))+
-  labs(title = "Tasa de suicidios por sector en hombres",x = "Porcentaje", y = "Tasa de suicidio por 100000 habitantes")+
+  labs(title = "Tasa de suicidios por sector en hombres",x = "Porcentaje empleo", y = "Tasa de suicidio por 100000 habitantes")+
   Tema_Graficas
 
 

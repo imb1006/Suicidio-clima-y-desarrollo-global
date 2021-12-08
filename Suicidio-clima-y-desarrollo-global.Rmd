@@ -50,7 +50,7 @@ Inicialmente, se plantean una serie de objetivos de estudio, para los cuales se 
 La OMS define el suicidio como aquella acción mediante la cual un individuo se causa un daño a sí mismo, llegando a la muerte, sin tener en cuenta la intencionalidad y el conocimiento de los motivos. Sus características son la voluntariedad y la premeditación.
 
 
-```{r, echo=FALSE, message=FALSE, Codigo_Necesario}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, Codigo_Necesario}
 library(readr)
 library(tidyverse)
 library(dplyr)
@@ -157,7 +157,8 @@ Clima_Suicidio %>%
   ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
   geom_point(aes(colour = Pais))+
   geom_smooth(aes(colour = Pais))+
-  labs(title = "Tasa de suicidio y temperatura en Europa",x = "Temperadura media", y = "Tasa de suicidio")
+  labs(title = "Tasa de suicidio y temperatura en Europa",x = "Temperadura media en ºC", y = "Tasa de suicidio por 100000 habitantes")+
+  Tema_Graficas
 ```
 
 ##### Paises_Separados
@@ -170,8 +171,9 @@ Clima_Suicidio %>%
   ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
   geom_point(aes(colour = Pais), show.legend = FALSE)+
   geom_smooth(aes(colour = Pais), show.legend = FALSE)+
-  labs(title = "Tasa de suicidio y temperatura en Europa", x = "Temperatura media", y = "Tasa de suicidio")+
-  facet_wrap(vars(Pais))
+  labs(title = "Tasa de suicidio y temperatura en Europa", x = "Temperatura media en ºC", y = "Tasa de suicidio por 100000 habitantes")+
+  facet_wrap(vars(Pais))+
+  Tema_Graficas
 ```
 
 #### **Conclusiones**
@@ -181,7 +183,8 @@ Inconveniente: aún habiendo analizado los datos no podemos asegurar que la conc
 ## 2. Industrialización y emisión de CO2.
 
 ## 3. Sectores de empleo y suicidio.
-Añadir descripción objetivo 3
+Estudio del aumento o disminución de la tasa de suicidos en países europeos según la evolución del porcentaje de empleo en cada sector de trabajo.\
+Parece más apropiado evaluar los datos de mujeres y hombres por separado ya que existe una gran diferencia entre las tasas de suicidio de unos y otros, siendo mucho mayor la de los hombres.
 
 ```{r, echo=FALSE, message=FALSE, Sectores_Suicidio}
 Sectores_Suicidio <- Sectores %>% 
@@ -192,6 +195,7 @@ Sectores_Suicidio <- Sectores %>%
 ```
 
 #### Elige visualización{.tabset .tabset-fade .tabset-pills}
+
 ##### Mujeres
 ```{r, echo=FALSE, message=FALSE, Sectores_Suicidio_mujeres}
 
@@ -201,7 +205,7 @@ Sectores_Suicidio %>%
   ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
   geom_point(aes(colour=Sectores))+
   geom_smooth(aes(colour=Sectores))+
-  labs(title = "Tasa de suicidios por sector en mujeres",x = "Porcentaje", y = "Tasa de suicidio por 100000 habitantes")+
+  labs(title = "Tasa de suicidios por sector en mujeres",x = "Porcentaje empleo", y = "Tasa de suicidio por 100000 habitantes")+
   Tema_Graficas
 ```
 
@@ -213,14 +217,24 @@ Sectores_Suicidio %>%
   ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
   geom_point(aes(colour=Sectores))+
   geom_smooth(aes(colour=Sectores))+
-  labs(title = "Tasa de suicidios por sector en hombres",x = "Porcentaje", y = "Tasa de suicidio por 100000 habitantes")+
+  labs(title = "Tasa de suicidios por sector en hombres",x = "Porcentaje empleo", y = "Tasa de suicidio por 100000 habitantes")+
   Tema_Graficas
 ```
 
 
 #### **Conclusiones**
-En las gráficas obtenidas podemos visualizar cómo ...\
+Realizaremos el análisis de las gráficas según cada sector de empleo ya que con los datos de los que disponemos no es muy adecuado que el análisis sea conjunto.\    
 
+- **Agricultura.**     
+   En relación con la agricultura vemos cómo en ambas gráficas ante un mayor porcentaje de agricultores en la población trabajadora, se ve reducida la tasa de suicidio.
+- **Industria.**  
+   - En mujeres se puede apreciar un pico según aumentan los niveles de industria del país, pero tras llegar a un determinado punto la tasa de suicidios vuelve a descender hasta alcanzar lo que parece una estabilidad.    
+   - En hombres hay también un ascenso en la tasa de suicidios pero no se produce ningún pico, sino que tras el ascenso se mantendrá bastante estable.
+- **Servicios.**    
+   - En mujeres se produce un aumento de suicidios al mismo tiempo que el país incrementa el porcentaje de empleo en servicios, pero no se produce un pico escesivo y parece que se mantendrá más o menos estable.
+   - En hombres con el aumento del porcentaje de empleo en servicios se va a producir un pico en la tasa de suicidios y cuando el país alcance un determinado desarrollo en este sector el pico descenderá y se producirá una posterior estabilidad en los suicidios.
+
+Observación: parece que forma de la línea de industria en mujeres se intercambia por la de servicios en hombres y lo mismo sucede con la de servicios en mujeres e industria en hombres.
 
 ## 4. Emisiones de CO2 y temperatura.
 Añadir descripción del objetivo 4
