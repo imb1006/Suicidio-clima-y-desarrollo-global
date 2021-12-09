@@ -176,18 +176,21 @@ levels(factor(Sectores$Pais))
 # 2.1.- Ver la evolución de un país; es decir, si conforme aumenta la industrialización lo hacen también sus emisiones de CO2 y 
 # 2.2.- Una comparación entre países que no requiere de todo el periodo que aparece en los datos (2005 a 2013) por lo que se va a seleccionar únicamente un año, 2008
 
-# Nota!! Para asegurar que los datos no se vean influenciados por otras variables, se van a seleccionar solo los países que superen en un 25% el empleo basado en la industria
+# Nota!! Para asegurar que los datos no se vean influenciados por otras variables, se van a seleccionar solo los países que superen en un 25% el empleo basado en la industria, y se van a comparar con aquellos inferiores al 10%
 
-Contaminacion_Industria <- Sectores %>%
+Contaminacion_Industria_Altos_Bajos <- Sectores %>%
   filter(Año == 2008) %>%
   left_join(x =., y = Contaminacion) %>% 
   filter(Año == 2008) %>%
-  filter(Empleo_Industria >= 25.0)
+  filter(Empleo_Industria >= 25.0 | Empleo_Industria <= 10.0)
 
-levels(factor(Contaminacion_Industria$Pais))
+levels(factor(Contaminacion_Industria_Altos_Bajos$Pais))
 
-#Falta añadir el tratamiento de los datos
-#Falta añadir las gráficas
+
+#Si se observan los resultados obtenidos, los países como mayores tasas de industrialización son en su mayoría países desarrollados de Europa y Asia, mientras que los países poco industrializados son considerados el "Tercer Mundo" y se encuentran en África, Sudamérica y Asia
+
+#Faltan gráficas
+
 
 # * 3.Comparación de las tasas de suicidio según los distintos sectores de producción de cada país y su relación con el sexo.-------
 
