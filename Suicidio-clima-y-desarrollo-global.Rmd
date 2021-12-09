@@ -159,7 +159,7 @@ Clima_Suicidio %>%
   ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
   geom_point(aes(colour = Pais))+
   geom_smooth(aes(colour = Pais))+
-  labs(title = "Tasa de suicidio y temperatura en Europa",x = "Temperadura media en ºC", y = "Tasa de suicidio por 100000 habitantes")+
+  labs(title = "Tasa de suicidio y temperatura en Europa",x = "Temperatura media en ºC", y = "Tasa de suicidio por 100000 habitantes")+
   Tema_Graficas
 ```
 
@@ -246,7 +246,13 @@ Realizaremos el análisis de las gráficas según cada sector de empleo ya que c
 Observación: parece que forma de la línea de industria en mujeres se intercambia por la de servicios en hombres y lo mismo sucede con la de servicios en mujeres e industria en hombres.
 
 ## 4. Emisiones de CO2 y temperatura.
-Añadir descripción del objetivo 4
+Evaluación de variaciones de emisiones de CO2 y su impacto en la temperatura media de una región/país. \
+Se representarán los datos de emisiones medias y temperatura media del mundo para ver la comparación entre el análisis global y la local de un país determinado.\
+
+Se han seleccionado para el análisis 5 países: España, India, Senegal, China, Canadá y Japón
+
+
+
 
 
 ```{r, echo=FALSE, message=FALSE, Clima_Contaminacion}
@@ -320,6 +326,20 @@ CC_Paises %>%
 
 ```
 
+##### Senegal
+
+```{r, echo=FALSE, message=FALSE, Conjunto_Senegal}
+CC_Paises %>% 
+  filter(Pais =='Senegal') %>% 
+  ggplot(aes(x=Año, y=Valores))+
+  geom_point(aes(colour=CO2_T),show.legend=FALSE)+
+  geom_smooth(aes(colour=CO2_T),show.legend=FALSE)+
+  facet_wrap(~CO2_T, scales='free_y')+
+  labs(title = "Tasa de emisiones y temperatura en Senegal",x = "Años", y = " ")+
+  Tema_Graficas
+```
+
+
 ##### China
 ```{r, echo=FALSE, message=FALSE, Conjunto_China}
 CC_Paises %>% 
@@ -360,4 +380,6 @@ CC_Paises %>%
 ```
 
 #### **Conclusiones**
-En las gráficas obtenidas podemos visualizar cómo ...
+En las gráficas obtenidas podemos observar como las emisiones del dióxido de carbono estan estrechamente relacionadas con la temperatura. Se puede observar un creciemiento exponencial tanto de la temperatura del mundo y de sus emisiones.\
+
+Se visualiza que en aquellos países en los que en los últimos años han disminuido las emisiones de CO2, cómo en España y en Japón, el aumento de la temperatura se atenúa. Se confirman todas las noticias que escuchamos en nuestro día a día, estamos a tiempo de frenar el calentamiento global, si bajamos las emisiones.
