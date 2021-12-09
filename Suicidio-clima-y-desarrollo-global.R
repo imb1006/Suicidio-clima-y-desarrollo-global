@@ -136,6 +136,18 @@ Clima_Suicidio %>%
   labs(title = "Tasa de suicidio y temperatura en Europa",x = "Temperadura media en ºC", y = "Tasa de suicidio por 100000 habitantes")+
   Tema_Graficas
 
+#Otra opcion de visualización
+Clima_Suicidio %>% 
+  filter(Region=='Europe', drop.na=TRUE) %>% filter( Año==2010) %>% 
+  filter(Tasa_suicidio > 0, Sexo == "Female", drop.na=TRUE) %>% 
+  ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
+  geom_point(aes(colour = Pais), show.legend = FALSE)+
+  geom_smooth( show.legend = FALSE)+
+  labs(title = "Tasa de suicidio y temperatura en Europa",x = "Temperadura media en ºC", y = "Tasa de suicidio por 100000 habitantes")+
+  Tema_Graficas
+
+
+
 # Gráficas de dispersión por cada país
 Clima_Suicidio %>% 
   filter(Tasa_suicidio > 0, Sexo == "Female") %>% 
