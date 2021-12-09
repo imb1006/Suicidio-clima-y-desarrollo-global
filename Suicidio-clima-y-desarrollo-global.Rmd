@@ -173,9 +173,10 @@ Clima_Suicidio %>%
             Pais == "Portugal" | Pais == "Spain" | Pais == "Sweden" ) %>% 
   ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
   geom_point(aes(colour = Pais), show.legend = FALSE)+
-  geom_smooth(aes(colour = Pais), show.legend = FALSE)+
+  #geom_smooth(aes(colour = Pais), show.legend = FALSE)+
+  geom_smooth(aes(colour = Pais), method = "lm", formula = y ~ poly(x,2), show.legend = FALSE) +
   labs(title = "Tasa de suicidio y temperatura en Europa", x = "Temperatura media en ºC", y = "Tasa de suicidio por 100000 habitantes")+
-  facet_wrap(vars(Pais))+
+  facet_wrap(vars(Pais), scales = "free")+
   Tema_Graficas
 ```
 
