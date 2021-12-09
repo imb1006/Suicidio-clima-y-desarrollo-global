@@ -133,8 +133,20 @@ Clima_Suicidio %>%
   ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
   geom_point(aes(colour = Pais))+
   geom_smooth(aes(colour = Pais))+
-  labs(title = "Tasa de suicidio y temperatura en Europa",x = "Temperadura media en ºC", y = "Tasa de suicidio por 100000 habitantes")+
+  labs(title = "Tasa de suicidio y temperatura en Europa",x = "Temperatura media en ºC", y = "Tasa de suicidio por 100000 habitantes")+
   Tema_Graficas
+
+#Otra opcion de visualización
+Clima_Suicidio %>% 
+  filter(Region=='Europe', drop.na=TRUE) %>% filter( Año==2010) %>% 
+  filter(Tasa_suicidio > 0, Sexo == "Female", drop.na=TRUE) %>% 
+  ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
+  geom_point(aes(colour = Pais), show.legend = FALSE)+
+  geom_smooth( show.legend = FALSE)+
+  labs(title = "Tasa de suicidio y temperatura en Europa",x = "Temperatura media en ºC", y = "Tasa de suicidio por 100000 habitantes")+
+  Tema_Graficas
+
+
 
 # Gráficas de dispersión por cada país
 Clima_Suicidio %>% 
@@ -145,7 +157,7 @@ Clima_Suicidio %>%
   ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
   geom_point(aes(colour = Pais), show.legend = FALSE)+
   geom_smooth(aes(colour = Pais), show.legend = FALSE)+
-  labs(title = "Tasa de suicidio y temperatura en Europa", x = "Temperadura media en ºC", y = "Tasa de suicidio por 100000 habitantes")+
+  labs(title = "Tasa de suicidio y temperatura en Europa", x = "Temperatura media en ºC", y = "Tasa de suicidio por 100000 habitantes")+
   facet_wrap(vars(Pais))+
   Tema_Graficas
 
@@ -254,7 +266,8 @@ CC_Paises <- pivot_longer(CC, names_to = 'CO2_T', values_to = 'Valores', cols=c(
 # '#### Títulos de las gráficas'
 
 
-# Por el momento elegiremos un país en desarrollo como India
+# Por el momento elegiremos un país en desarrollo como India, 
+# en el Markdown se elegirán distintos países para su visualización
 
 CC_Paises %>% 
   filter(Pais =='India') %>% 
