@@ -214,7 +214,7 @@ Sectores_Suicidio %>%
   filter(Sexo=='Female') %>% drop_na() %>%
   ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
   geom_point(aes(colour=Sectores))+
-  geom_smooth(aes(colour=Sectores))+
+  geom_smooth(aes(colour=Sectores, fill = Sectores), alpha = 0.2)+
   labs(title = "Tasa de suicidios por sector en mujeres",x = "Porcentaje empleo", y = "Tasa de suicidio por 100000 habitantes")+
   Tema_Graficas
 ```
@@ -226,7 +226,7 @@ Sectores_Suicidio %>%
   filter(Sexo=='Male') %>% drop_na() %>%
   ggplot(aes(x=Porcentaje,y=Tasa_suicidio))+
   geom_point(aes(colour=Sectores))+
-  geom_smooth(aes(colour=Sectores))+
+  geom_smooth(aes(colour=Sectores, fill = Sectores), alpha = 0.2)+
   labs(title = "Tasa de suicidios por sector en hombres",x = "Porcentaje empleo", y = "Tasa de suicidio por 100000 habitantes")+
   Tema_Graficas
 ```
