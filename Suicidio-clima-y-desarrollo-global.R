@@ -138,7 +138,7 @@ Clima_Suicidio %>%
 
 #Otra opcion de visualización
 Clima_Suicidio %>% 
-  filter(Region=='Europe', drop.na=TRUE) %>% filter( Año==2010) %>% 
+  filter(Region == 'Europe', drop.na=TRUE) %>% filter( Año==2010) %>% 
   filter(Tasa_suicidio > 0, Sexo == "Female", drop.na=TRUE) %>% 
   ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
   geom_point(aes(colour = Pais), show.legend = FALSE)+
@@ -174,22 +174,75 @@ levels(factor(Sectores$Pais))
 
 # Nota!! Se va a realizar un doble análisis:
 # 2.1.- Ver la evolución de un país; es decir, si conforme aumenta la industrialización lo hacen también sus emisiones de CO2 y 
+
+
+#Faltan gráficas
+
+
+
 # 2.2.- Una comparación entre países que no requiere de todo el periodo que aparece en los datos (2005 a 2013) por lo que se va a seleccionar únicamente un año, 2008
 
 # Nota!! Para asegurar que los datos no se vean influenciados por otras variables, se van a seleccionar solo los países que superen en un 25% el empleo basado en la industria, y se van a comparar con aquellos inferiores al 10%
 
-Contaminacion_Industria_Altos_Bajos <- Sectores %>%
+Contaminacion_Industria <- Sectores %>%
+  filter(Año == 2008) %>%
+  left_join(x =., y = Contaminacion) %>% 
+  filter(Año == 2008)
+
+Contaminacion_Industria_Altos <- Sectores %>%
   filter(Año == 2008) %>%
   left_join(x =., y = Contaminacion) %>% 
   filter(Año == 2008) %>%
-  filter(Empleo_Industria >= 25.0 | Empleo_Industria <= 10.0)
+  filter(Empleo_Industria >= 25.0)
 
-levels(factor(Contaminacion_Industria_Altos_Bajos$Pais))
+levels(factor(Contaminacion_Industria_Altos$Pais))
 
+Contaminacion_Industria_Bajos <- Sectores %>%
+  filter(Año == 2008) %>%
+  left_join(x =., y = Contaminacion) %>% 
+  filter(Año == 2008) %>%
+  filter(Empleo_Industria <= 10.0)
+
+levels(factor(Contaminacion_Industria_Bajos$Pais))
 
 #Si se observan los resultados obtenidos, los países como mayores tasas de industrialización son en su mayoría países desarrollados de Europa y Asia, mientras que los países poco industrializados son considerados el "Tercer Mundo" y se encuentran en África, Sudamérica y Asia
 
-#Faltan gráficas
+#Se van a seleccionar 10 países de cada grupo aleatoriamente, ya que trabajar con todos ellos llevaría a una mala visualización de los datos en las gráficas
+
+#Emisiones_Altos: Austria, China, Germany, Iran, Malaysia, Mexico, South Africa, Spain, Turkey, United Arab Emirates
+
+Contaminacion_Industria %>% 
+  filter(Empleo_Industria >= 25.0) %>% 
+  filter( Pais == "Finland" | Pais == "Germany" | Pais == "Iceland" |
+            Pais == "Ireland" | Pais == "Italy" | Pais == "Netherlands" | Pais == "Norway" | Pais == "Poland" |
+            Pais == "Portugal" | Pais == "Spain" | Pais == "Sweden" ) %>% 
+  ggplot(aes(x = Pais, y = Emisiones_Anuales, stat = 'identity'))+
+  geom_bar(aes(colour = Pais), show.legend = FALSE)+
+  labs(title =  "Niveles de contaminación en países fuertemente industrializados", x = "Pais", y = "Millones de toneladas de emisiones de CO2 anuales")+
+  facet_grid(vars(Pais))+
+  Tema_Graficas
+
+
+Contaminacion_Industria_Altos %>% 
+  #filter( Pais == "Austria" | Pais == "China" | Pais == "Germany" |
+            #Pais == "Iran" | Pais == "Malaysia" | Pais == "Mexico" | Pais == "South                   Africa" | Pais == "Spain" |Pais == "Turkey" | Pais == "United Arab Emirates") %>% 
+  ggplot(aes(x = Emisiones_Anuales))+
+  geom_bar(aes(colour = Pais), show.legend = FALSE)+
+  geom_smooth(show.legend = FALSE)+
+  labs(title = "Niveles de contaminación en países fuertemente industrializados", x = "País") #y = "Millones de toneladas de emisiones de CO2 anuales")
+  + Tema_Graficas
+
+#Emisiones_Bajos: Ethiopia, Haiti, Laos, Mali, Mozambique, Niger, Sierra Leone, Somalia, Solomon Islands, Uganda
+
+Contaminacion_Industria_Bajos %>% 
+  filter( Pais == "Ethiopia" | Pais == "Haiti" | Pais == "Laos" |
+            Pais == "Mali" | Pais == "Mozambique" | Pais == "Niger" | Pais == "Sierra Leone" | Pais == "Somalia" |Pais == "Solomon Islands" | Pais == "Uganda") %>% 
+  ggplot(aes(x = Pais, y = Emisiones_Anuales))+
+  geom_bar(aes(colour = Pais), show.legend = FALSE)+
+  geom_smooth(show.legend = FALSE)+
+  labs(title = "Niveles de contaminación en países fuertemente industrializados",x = "País", y = "Millones de toneladas de emisiones de CO2 anuales")+
+  Tema_Graficas
+
 
 
 # * 3.Comparación de las tasas de suicidio según los distintos sectores de producción de cada país y su relación con el sexo.-------
