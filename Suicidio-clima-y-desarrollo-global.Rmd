@@ -25,8 +25,11 @@ output:
     toc: yes
 always_allow_html: true
 ---
+<style>
+body {
+text-align: justify}
+</style>
 
-![](INPUT/DATA//Imagen1.jpg)
 
 ------------------------------------------------------------------------
 
@@ -183,9 +186,15 @@ Clima_Suicidio %>%
 En las gráficas obtenidas podemos visualizar cómo la tasa de suicidios aumenta en los países más fríos y disminuye en los más cálidos, por lo que podríamos indicar que existe una relación inversamente proporcional entre tasa de suicidios y temperatura.\
 Inconveniente: aún habiendo analizado los datos no podemos asegurar que la conclusión a la que hemos llegado es 100% fiable ya que para ello se requieren muchos más análisis.
 
-## 2. Industrialización y emisión de CO2.
+## 2. Industrialización y emisión de CO2. 
+<center>
+![](INPUT/DATA//Imagen1.jpg){width='400px'} \
+</center>
 Estudio del impacto del sector industria, comúnmente denominado sector secundario, en la emisión de gases de efecto invernadero.\
 En la actualidad la mayoría de países basan su economía mayoritariamente en la agricultura (países subdesarrollados o en vías de desarrollo) y en el sector servicios (educación, salud, turismo,...)(países desarrollados). Por ello se ha considerado necesario realizar el estudio con datos porcentuales de industria superior al 25% para los países industrializados, que se compararán con los menores al 10%, tratando de reducir la influencia de otros factores en el análisis de los datos.\
+
+
+
 La hipótesis inicial es que aquellos países cuya industria tiene un peso considerable, tendrán tasas de emisión superiores.
 
 Falta incluir los datos y su análisis + conclusiones
