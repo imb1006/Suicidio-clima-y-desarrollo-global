@@ -2,7 +2,7 @@
 title:   
    _Suicidio, clima y desarrollo global._
    
-   ![](INPUT/DATA/Imagen3.png){width='150px'}
+   ![](INPUT/IMAGES/ImagenTitulo.jpeg){width='150px'}
    
 subtitle: |
   Fuentes de datos Biomédicas y Web semántica  
@@ -30,14 +30,14 @@ body {
 text-align: justify}
 </style>
 
-
 ------------------------------------------------------------------------
 
-# Introducción, objetivos y justificación
+# 1. Introducción, objetivos y justificación
 
 #### **Introducción**
 
 A lo largo de este seminario, se pretende conocer la relación que existe entre ***factores climáticos***, el ***desarrollo socioeconómico*** de las distintas naciones y los ***índices de suicidio*** publicados.
+
 
 #### **Objetivos**
 
@@ -48,6 +48,7 @@ Inicialmente, se plantean una serie de objetivos de estudio, para los cuales se 
 3.  Comparación de las tasas de suicidio según los distintos sectores de producción de cada país y su relación con el sexo.\
 4.  Análisis del aumento de emisiones de CO2 y su impacto en la temperatura media de una región/país.\
 
+
 #### **Justificación del tema**
 
 La OMS define el suicidio como aquella acción mediante la cual un individuo se causa un daño a sí mismo, llegando a la muerte, sin tener en cuenta la intencionalidad y el conocimiento de los motivos. Sus características son la voluntariedad y la premeditación.
@@ -55,12 +56,19 @@ La OMS define el suicidio como aquella acción mediante la cual un individuo se 
 Añadir más justificación y relacionarla con la contaminación y la temperatura
 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, Codigo_Necesario}
+# 2. Trabajando con los datos
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# Carga de las librerías necesarias:
 library(readr)
 library(tidyverse)
 library(dplyr)
 library(DT)
+```
 
+
+## 2.1. Importación
+Todos los archivos de datos descargados en la carpeta "DATA" son de extensión .csv.
+```{r, message=FALSE}
 Datos_Clima <- read_csv("INPUT/DATA/GlobalLandTemperaturesByCountry.csv")
 
 Datos_Suicidio <- read_csv("INPUT/DATA/SuicideGlobalRates.csv")
@@ -68,7 +76,13 @@ Datos_Suicidio <- read_csv("INPUT/DATA/SuicideGlobalRates.csv")
 Datos_Sectores <- read_delim("INPUT/DATA/EmploymentSectors.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
 Datos_Emisiones <- read_delim("INPUT/DATA/AnnualCO2EmissionsPerCountry.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
+```
 
+
+## 2.2. Tratamiento de datos
+
+En primer lugar, se ha procedido a la selección de datos entre los años 2005 y 2013, ambos incluidos.
+```{r, echo=FALSE}
 # Selección de datos de 2005 a 2013 -------------------------------------------
 
 sDatos_Clima <- Datos_Clima %>% filter(between(dt,as.Date("2005-01-01"),as.Date("2013-12-31")))
@@ -78,18 +92,10 @@ sDatos_Suicidio <- Datos_Suicidio %>% filter(between(Period,2005,2013))
 sDatos_Sectores <- Datos_Sectores %>% filter(between(Year,2005,2013))
 
 sDatos_Emisiones <- Datos_Emisiones %>% filter(between(Year,2005,2013))
+```
 
-# Modificación de tablas --------------------------------------------
-
-# * Clima -----------------------------------------------------------------
-colnames(sDatos_Clima)<-c("Fecha","Temperatura","DesviacionTemperatura","Pais")
-
-mDatos_Clima<- sDatos_Clima %>% 
-  mutate(Año= as.integer(format(Fecha,'%Y')))  %>% 
-  select(Fecha,Temperatura,Pais,Año)
-
-Clima <- mDatos_Clima %>% group_by(Pais,Año) %>% summarise(Temperatura_Media=mean(Temperatura,na.rm=TRUE))
-
+Además, con el objetivo de obtener tablas cohesionadas que permitan un mejor manejo de la información, se ha realizado la selección y el renombramiento de las columnas de interés de los diferentes tibbles.
+```{r, message=FALSE}
 # * Suicidio --------------------------------------------------------------
 Suicidio <- sDatos_Suicidio %>% 
   select(ParentLocation, Location, Period, Dim1, FactValueNumeric) %>% 
@@ -107,16 +113,32 @@ Sectores <- sDatos_Sectores %>%
   select(Entity, Year, `Employment in agriculture (% of total employment) (modeled ILO estimate)`, `Employment in industry (% of total employment) (modeled ILO estimate)`, `Employment in services (% of total employment) (modeled ILO estimate)`) %>%
   rename(Pais = Entity, Año = Year, Empleo_Agricultura = `Employment in agriculture (% of total employment) (modeled ILO estimate)`, Empleo_Industria = `Employment in industry (% of total employment) (modeled ILO estimate)`, Empleo_Servicios = `Employment in services (% of total employment) (modeled ILO estimate)`) %>%
   mutate(Año = as.integer(Año))
+```
 
-#Tema de gráficas para los objetivos
+En cuanto a los datos del clima se destaca que han requerido un mayor tratamiento ya que se partía de un tibble que contenía información de la temperatura por meses en cada país, mientras que lo requerido era la temperatura media anual.
+```{r, message=FALSE}
+# * Clima -----------------------------------------------------------------
+colnames(sDatos_Clima)<-c("Fecha","Temperatura","DesviacionTemperatura","Pais")
+
+mDatos_Clima<- sDatos_Clima %>% 
+  mutate(Año= as.integer(format(Fecha,'%Y')))  %>% 
+  select(Fecha,Temperatura,Pais,Año)
+
+Clima <- mDatos_Clima %>% group_by(Pais,Año) %>% summarise(Temperatura_Media=mean(Temperatura,na.rm=TRUE))
+```
+
+Como toque final, para que todas las gráficas presenten el mismo aspecto, se ha creado un tema específico que se muestra a continuación:
+```{r, message=FALSE}
 Tema_Graficas<- theme_bw()+
   theme(panel.border = element_rect(linetype = "solid", fill = NA, colour="grey70"),
-        strip.background = element_rect(colour = "grey75", fill = "grey95"),# Borde del titulo al hacer wrap
+        strip.background = element_rect(colour = "grey75", fill = "grey95"),
         strip.text.x = element_text(colour = "grey25", face = "bold.italic", size = 11),
         axis.text = element_text(colour = "grey40", size = 11))
 ```
 
-# Visión general de los datos de trabajo
+
+
+## 2.3. Visión general de los datos de trabajo
 
 ### Clima
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
@@ -139,15 +161,21 @@ DT::datatable(Sectores)
 ```
 
 
-# Desarrollo de los objetivos
+# 3. Desarrollo de los objetivos
 
-## 1. Temperatura y suicidio.
+## Objetivo 1: Temperatura y suicidio.
 Evaluamos el impacto de la temperatura media anual de un país en su tasa global de suicidio para estudiar una posible relación.\
 Utilizaremos únicamente países Europeos, más similares entre sí respecto a otros factores que si empleáramos países de todo el mundo, para poder obtener una mejor visualización de la influencia de la temperatura en la tasa de suicidios, evitando que factores más influyentes (ej. nivel de industrialización) afecten al resultado.
 
 ```{r, echo=FALSE, message=FALSE, Clima_Suicidio}
 Clima_Suicidio <-left_join(x = Suicidio, y = Clima) %>% 
   arrange(Pais, Año, Sexo)
+```
+
+Los datos de la siguiente tabla, que contiene información conjunta sobre el clima y el suicidio por países, serán los que representados en las gráficas de las que se obtendrán las conclusiones.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(Clima_Suicidio)
 ```
 
 
@@ -161,7 +189,7 @@ Clima_Suicidio %>%
            Pais == "Portugal" | Pais == "Spain" | Pais == "Sweden" ) %>% 
   ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
   geom_point(aes(colour = Pais))+
-  geom_smooth(aes(colour = Pais), method = "lm", formula = y ~ poly(x,2)) +
+  geom_smooth(aes(colour = Pais, fill = Pais), alpha = 0.2 , method = "lm", formula = y ~ poly(x,2)) +
   labs(title = "Tasa de suicidio y temperatura en Europa",x = "Temperatura media en ºC", y = "Tasa de suicidio por 100000 habitantes")+
   Tema_Graficas
 ```
@@ -175,7 +203,7 @@ Clima_Suicidio %>%
             Pais == "Portugal" | Pais == "Spain" | Pais == "Sweden" ) %>% 
   ggplot(aes(x = Temperatura_Media, y = Tasa_suicidio))+
   geom_point(aes(colour = Pais), show.legend = FALSE)+
-  geom_smooth(aes(colour = Pais), method = "lm", formula = y ~ poly(x,2), show.legend = FALSE) +
+  geom_smooth(aes(colour = Pais, fill = Pais), method = "lm", formula = y ~ poly(x,2), show.legend = FALSE) +
   labs(title = "Tasa de suicidio y temperatura en Europa", x = "Temperatura media en ºC", y = "Tasa de suicidio por 100000 habitantes")+
   facet_wrap(vars(Pais), scales = "free")+
   Tema_Graficas+
@@ -186,9 +214,9 @@ Clima_Suicidio %>%
 En las gráficas obtenidas podemos visualizar cómo la tasa de suicidios aumenta en los países más fríos y disminuye en los más cálidos, por lo que podríamos indicar que existe una relación inversamente proporcional entre tasa de suicidios y temperatura.\
 Inconveniente: aún habiendo analizado los datos no podemos asegurar que la conclusión a la que hemos llegado es 100% fiable ya que para ello se requieren muchos más análisis.
 
-## 2. Industrialización y emisión de CO2. 
+## Objetivo 2: Industrialización y emisión de CO2. 
 <center>
-![](INPUT/DATA//Imagen1.jpg){width='400px'} \
+![](INPUT/IMAGES/Imagen1.jpg){width='400px'} \
 </center>
 Estudio del impacto del sector industria, comúnmente denominado sector secundario, en la emisión de gases de efecto invernadero.\
 En la actualidad la mayoría de países basan su economía mayoritariamente en la agricultura (países subdesarrollados o en vías de desarrollo) y en el sector servicios (educación, salud, turismo,...)(países desarrollados). Por ello se ha considerado necesario realizar el estudio con datos porcentuales de industria superior al 25% para los países industrializados, que se compararán con los menores al 10%, tratando de reducir la influencia de otros factores en el análisis de los datos.\
@@ -201,7 +229,7 @@ Falta incluir los datos y su análisis + conclusiones
 
 #### **Conclusiones**
 
-## 3. Sectores de empleo y suicidio.
+## Objetivo 3: Sectores de empleo y suicidio.
 Estudio del aumento o disminución de la tasa de suicidos en países europeos según la evolución del porcentaje de empleo en cada sector de trabajo.\
 Parece más apropiado evaluar los datos de mujeres y hombres por separado ya que existe una gran diferencia entre las tasas de suicidio de unos y otros, siendo mucho mayor la de los hombres.
 
@@ -255,15 +283,11 @@ Realizaremos el análisis de las gráficas según cada sector de empleo ya que c
 
 Observación: parece que forma de la línea de industria en mujeres se intercambia por la de servicios en hombres y lo mismo sucede con la de servicios en mujeres e industria en hombres.
 
-## 4. Emisiones de CO2 y temperatura.
+## Objetivo 4: Emisiones de CO2 y temperatura.
 Evaluación de variaciones de emisiones de CO2 y su impacto en la temperatura media de una región/país. \
 Se representarán los datos de emisiones medias y temperatura media del mundo para ver la comparación entre el análisis global y la local de un país determinado.\
 
 Se han seleccionado para el análisis 5 países: España, India, Senegal, China, Canadá y Japón
-
-
-
-
 
 ```{r, echo=FALSE, message=FALSE, Clima_Contaminacion}
 
@@ -393,3 +417,5 @@ CC_Paises %>%
 En las gráficas obtenidas podemos observar como las emisiones del dióxido de carbono estan estrechamente relacionadas con la temperatura. Se puede observar un creciemiento exponencial tanto de la temperatura del mundo y de sus emisiones.\
 
 Se visualiza que en aquellos países en los que en los últimos años han disminuido las emisiones de CO2, cómo en España y en Japón, el aumento de la temperatura se atenúa. Se confirman todas las noticias que escuchamos en nuestro día a día, estamos a tiempo de frenar el calentamiento global, si bajamos las emisiones.
+
+# 4. Bibliografía
