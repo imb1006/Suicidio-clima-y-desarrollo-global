@@ -53,13 +53,21 @@ Inicialmente, se plantean una serie de objetivos de estudio, para los cuales se 
 
 La OMS define el suicidio como aquella acción mediante la cual un individuo se causa un daño a sí mismo, llegando a la muerte, sin tener en cuenta la intencionalidad y el conocimiento de los motivos. Sus características son la voluntariedad y la premeditación.\
 
+El Ministerio para la Transición Ecológica y el Reto Demográfico define el cambio climático como la variación global del clima de la Tierra. La variación tiene causas naturales, a las que se suma la acción del hombre, teniendo impacto en todos los parámetros climáticos: temperatura, precipitaciones, nubosidad, etc, a muy diversas escalas de tiempo.\
+
+Si bien ambos conceptos no parecen estar relacionados, la acción del ser humano sobre nuestro planeta comenzó a acrecentarse con la industrialización, momento histórico acontecido entre finales del siglo XIX y comienzos del XX. Desde entonces, se ha causado tal impacto a nivel medioambiental y ecológico, que la calidad de vida en el ámbito rural así como en el ámbito urbano ha disminuido con creces.\
+
+Esta calidad de vida es un concepto subjetivo e individual, que se ve influenciado por numerosos factores, pero que tiene especial impacto es nuestra salud mental. Desde los gobiernos y ONGs ya se ha constatado la importancia de la prevención del suicidio; sin embargo, poco se ha realizado en términos de políticas para reducir su impacto. Menos aún se ha estudiado el papel que la climatología y la contaminación juegan en el riesgo de suicidio.
+A día de hoy, el suicidio es la causa de muerte violenta más frecuente en los jóvenes de entre 15 y 29 años en España.
+
 Algunos dicen que el cambio climático es la mayor amenaza de nuestra época, mientras que otros dicen que es un mito basado en ciencia dudosa. \
 
-¿Existe el cambio climático?¿de ser así tendría alguna relacion con las emisiones de CO2 que expulsamos a la atmósfera?¿Tiene alguna relación el clima de una zona con nuestra salud mental?¿Habrá alguna relación entre los suicidios y la forma de vida de un país?
+Del mismo modo la salud mental se considera un tabú social, fácilmente tratada con fármacos y en silencio. \
+
+¿Existe el cambio climático? ¿De ser así tendría alguna relacion con las emisiones de CO2 que expulsamos a la atmósfera? ¿Tiene alguna relación el clima de una zona con nuestra salud mental? ¿Habrá alguna relación entre los suicidios y la forma de vida de un país?
 
 En este seminario se intentará dar respuesta a estas preguntas, estará en vuestras manos el hacer algo tras conocer esta información.
 
-Añadir más justificación y relacionarla con la contaminación y la temperatura
 
 
 # 2. Trabajando con los datos
@@ -122,6 +130,7 @@ Sectores <- sDatos_Sectores %>%
 ```
 
 En cuanto a los datos del clima se destaca que han requerido un mayor tratamiento ya que se partía de un tibble que contenía información de la temperatura por meses en cada país, mientras que lo requerido era la temperatura media anual.
+
 ```{r, message=FALSE}
 # * Clima -----------------------------------------------------------------
 colnames(sDatos_Clima)<-c("Fecha","Temperatura","DesviacionTemperatura","Pais")
@@ -134,6 +143,7 @@ Clima <- mDatos_Clima %>% group_by(Pais,Año) %>% summarise(Temperatura_Media=me
 ```
 
 Como toque final, para que todas las gráficas presenten el mismo aspecto, se ha creado un tema específico que se muestra a continuación:
+
 ```{r, message=FALSE}
 Tema_Graficas<- theme_bw()+
   theme(panel.border = element_rect(linetype = "solid", fill = NA, colour="grey70"),
@@ -173,6 +183,7 @@ DT::datatable(Sectores)
 # 3. Desarrollo de los objetivos
 
 ## Objetivo 1: Temperatura y suicidio.
+
 Evaluamos el impacto de la temperatura media anual de un país en su tasa global de suicidio para estudiar una posible relación.\
 Utilizaremos únicamente países Europeos, más similares entre sí respecto a otros factores que si empleáramos países de todo el mundo, para poder obtener una mejor visualización de la influencia de la temperatura en la tasa de suicidios, evitando que factores más influyentes (ej. nivel de industrialización) afecten al resultado.
 
@@ -181,7 +192,7 @@ Clima_Suicidio <-left_join(x = Suicidio, y = Clima) %>%
   arrange(Pais, Año, Sexo)
 ```
 
-Los datos de la siguiente tabla, que contiene información conjunta sobre el clima y el suicidio por países, serán los que representados en las gráficas de las que se obtendrán las conclusiones.
+Los datos de la siguiente tabla, que contiene información conjunta sobre el clima y el suicidio por países, serán los representados en las gráficas de las que se obtendrán las conclusiones.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 DT::datatable(Clima_Suicidio)
@@ -227,18 +238,76 @@ Inconveniente: aún habiendo analizado los datos no podemos asegurar que la conc
 <center>
 ![](INPUT/IMAGES/Imagen1.jpg){width='400px'} \
 </center>
+
 Estudio del impacto del sector industria, comúnmente denominado sector secundario, en la emisión de gases de efecto invernadero.\
-En la actualidad la mayoría de países basan su economía mayoritariamente en la agricultura (países subdesarrollados o en vías de desarrollo) y en el sector servicios (educación, salud, turismo,...)(países desarrollados). Por ello se ha considerado necesario realizar el estudio con datos porcentuales de industria superior al 25% para los países industrializados, que se compararán con los menores al 10%, tratando de reducir la influencia de otros factores en el análisis de los datos.\
-
-
+En la actualidad la mayoría de países basan su economía mayoritariamente en la agricultura (países subdesarrollados o en vías de desarrollo) y en el sector servicios (educación, salud, turismo,...)(países desarrollados).\
+Por ello se ha considerado necesario realizar el estudio con datos porcentuales de industria superior al 25% para los países industrializados, que se compararán con los menores al 10%, tratando de reducir la influencia de otros factores en el análisis de los datos.\
 
 La hipótesis inicial es que aquellos países cuya industria tiene un peso considerable, tendrán tasas de emisión superiores.
 
-Falta incluir los datos y su análisis + conclusiones
+```{r, echo=FALSE, message=FALSE, Contaminacion_Industria}
+Contaminacion_Industria <- Contaminacion %>%
+  left_join(x =., y = Sectores) 
+```
+
+Los datos de la siguiente tabla, con información sobre los sectores de empleo y las emisiones anuales de gases contaminantes, serán los utilizados para la representación gráfica y la demostración de la hipótesis.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(Contaminacion_Industria)
+```
+
+#### Selecciona visualización{.tabset .tabset-fade .tabset-pills}
+##### Gráfico_Correlacion
+
+```{r, echo=FALSE, message=FALSE, Grafico_Correlacion}
+Contaminacion_Industria %>% 
+  filter( Pais == "China") %>% 
+  ggplot(aes(x = Empleo_Industria, y = Emisiones_Anuales))+
+  geom_point(aes(colour = Pais), show.legend = FALSE)+
+  geom_smooth(aes(colour = Pais), show.legend = FALSE)+
+  labs(title = "Correlación entre el nivel de industrialización y las emisiones de CO2", x = "Porcentaje de empleo en industria", y = "Emisiones de C02 anuales en millones de toneladas")+
+  #Nos permite distinguir el país que es, más útil si se hubiera hecho filter con varios países, aquí solo sirve para mostrar el nombre del país
+  facet_wrap(vars(Pais))+
+  Tema_Graficas
+```
+
+#####Paises_Industria_Alta
+
+```{r, echo=FALSE, message=FALSE, Paises_Industria_Alta}
+Contaminacion_Industria_A %>% 
+  ggplot(aes(x = Empleo_Industria, y = Emisiones_Anuales))+
+  geom_point(aes(colour = Pais), show.legend = TRUE)+
+  geom_smooth(aes(colour = Pais), show.legend = FALSE)+
+  labs(title = "Contaminación en países fuertemente industrializados", x = "Porcentaje de empleo en industria", y = "Emisiones de C02 anuales en millones de toneladas")+
+  #facet_wrap(vars(Pais))+ Si se quisieran observar por separado, aunque no permite realizar la comparación visualmente
+  Tema_Graficas
+```
+
+#####Paises_Industria_Baja
+
+```{r, echo=FALSE, message=FALSE, Paises_Industria_Baja}
+Contaminacion_Industria_B %>%
+  ggplot(aes(x = Empleo_Industria, y = Emisiones_Anuales))+
+  geom_point(aes(colour = Pais), show.legend = TRUE)+
+  geom_smooth(aes(colour = Pais), show.legend = FALSE)+
+  labs(title = "Contaminación en países débilmente industrializados", x = "Porcentaje de empleo en industria", y = "Emisiones de C02 anuales en millones de toneladas")+
+  #facet_wrap(vars(Pais))+ Si se quisieran observar por separado, aunque no permite realizar la comparación visualmente
+  Tema_Graficas
+```
+  
+  
 
 #### **Conclusiones**
 
+A medida que aumenta el nivel de industria del país aumenta, también lo hacen las emisiones de CO2 producidas por este. Esto confirma la relación de proporcionalidad directa entre ambos factores.\
+Cuanta mayor industria tenga un país, mayores son sus índices de emisiones de CO2.\
+Cuanta menor industria tengo un país, menores son sus índices de emisiones de CO2.\
+Se requiere de mayor análisis para eliminar la influencia de otras posibles variables que alteren estos resultados.
+
+
+
 ## Objetivo 3: Sectores de empleo y suicidio.
+
 Estudio del aumento o disminución de la tasa de suicidos en países europeos según la evolución del porcentaje de empleo en cada sector de trabajo.\
 Parece más apropiado evaluar los datos de mujeres y hombres por separado ya que existe una gran diferencia entre las tasas de suicidio de unos y otros, siendo mucho mayor la de los hombres.
 
@@ -251,6 +320,7 @@ Sectores_Suicidio <- Sectores %>%
 ```
 
 Los datos de la siguiente tabla dan información conjunta sobre las emisiones de CO2 anuales de cada país y el suicidio por países. Trabajaremos sobre ellos en las gráficas.\
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 DT::datatable(Sectores_Suicidio)
 ```
@@ -298,6 +368,7 @@ Realizaremos el análisis de las gráficas según cada sector de empleo ya que c
 Observación: parece que forma de la línea de industria en mujeres se intercambia por la de servicios en hombres y lo mismo sucede con la de servicios en mujeres e industria en hombres.
 
 ## Objetivo 4: Emisiones de CO2 y temperatura.
+
 Evaluación de variaciones de emisiones de CO2 y su impacto en la temperatura media de una región/país. \
 Se representarán los datos de emisiones medias y temperatura media del mundo para ver la comparación entre el análisis global y la local de un país determinado.\
 
@@ -333,11 +404,13 @@ CC_Paises <- pivot_longer(CC, names_to = 'CO2_T', values_to = 'Valores', cols=c(
 ```
 \
 La siguiente tabla, que contiene información conjunta sobre el clima y las emisiones de CO2 por países, permitirá la correcta representación de las gráficas de las que se obtendrán las conclusiones.\
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 DT::datatable(CC_Paises)
 ```
 
 Para realizar la gráfica de emisiones mundiales, necesitamos modificar la tabla obtenida anteriormente, de la siguiente forma:\
+
 ```{r, message=FALSE}
 CC_Mundo<- CC %>%
   group_by(Año)%>% 
@@ -346,6 +419,7 @@ CC_Mundo<- CC %>%
 ```
 \
 Obtenemos la siguiente tabla con la que podemos trabajar\
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 DT::datatable(CC_Mundo)
 ```
@@ -380,6 +454,7 @@ CC_Paises %>%
 ```
 
 ##### India
+
 ```{r, echo=FALSE, message=FALSE, Conjunto_India}
 CC_Paises %>% 
   filter(Pais =='India') %>% 
@@ -407,6 +482,7 @@ CC_Paises %>%
 
 
 ##### China
+
 ```{r, echo=FALSE, message=FALSE, Conjunto_China}
 CC_Paises %>% 
   filter(Pais =='China') %>% 
@@ -420,6 +496,7 @@ CC_Paises %>%
 ```
 
 ##### Canadá
+
 ```{r, echo=FALSE, message=FALSE, Conjunto_Canada}
 CC_Paises %>% 
   filter(Pais =='Canada') %>% 
@@ -433,6 +510,7 @@ CC_Paises %>%
 ```
 
 ##### Japón
+
 ```{r, echo=FALSE, message=FALSE, Conjunto_Japon}
 CC_Paises %>% 
   filter(Pais =='Japan') %>% 
@@ -446,6 +524,7 @@ CC_Paises %>%
 ```
 
 #### **Conclusiones**
+
 En las gráficas obtenidas podemos observar como las emisiones del dióxido de carbono estan estrechamente relacionadas con la temperatura. Se puede observar un creciemiento exponencial tanto de la temperatura del mundo y de sus emisiones.\
 
 Se visualiza que en aquellos países en los que en los últimos años han disminuido las emisiones de CO2, cómo en España y en Japón, el aumento de la temperatura se atenúa. Se confirman todas las noticias que escuchamos en nuestro día a día, estamos a tiempo de frenar el calentamiento global, si bajamos las emisiones.
@@ -462,3 +541,8 @@ Se visualiza que en aquellos países en los que en los últimos años han dismin
 
 4. Share of employment in agriculture, industry, and services. (s/f). Ourworldindata.org. Recuperado de [https://ourworldindata.org/grapher/share-of-employment-in-agriculture-industry-and-services?time=2014..latest](https://ourworldindata.org/grapher/share-of-employment-in-agriculture-industry-and-services?time=2014..latest)
 
+5. Suicide. (s/f). Who.int Recuperado de: [https://www.who.int/news-room/fact-sheets/detail/suicide](https://www.who.int/news-room/fact-sheets/detail/suicide) 
+
+6. Qué es el cambio climático (s/f). Ministerio de Transición Ecológica y de Reto Demográfico (MITECO) Recuperado de: [https://www.miteco.gob.es/es/cambio-climatico/temas/cumbre-cambio-climatico-cop21/el-cambio-climatico/](https://www.miteco.gob.es/es/cambio-climatico/temas/cumbre-cambio-climatico-cop21/el-cambio-climatico/)
+
+7. Estadística de defunciones según la causa de muerte. 2020 (s/f). Instituto Nacional de Estadística (INE) [https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176780&menu=ultiDatos&idp=1254735573175](https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176780&menu=ultiDatos&idp=1254735573175)
