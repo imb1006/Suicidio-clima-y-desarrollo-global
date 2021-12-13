@@ -170,78 +170,92 @@ levels(factor(Contaminacion$Pais))
 levels(factor(Sectores$Pais))
 
 # Se unen los sets de datos, obteniendo un tibble que contiene los países de 
-#la tabla "Sectores", que era la que menos nombres contenía.
+#la tabla "Contaminacion", que era la que menos nombres contenía.
 
 # Nota!! Se va a realizar un doble análisis:
 # 2.1.- Ver la evolución de un país; es decir, si conforme aumenta la industrialización lo hacen también sus emisiones de CO2 y 
 
+Contaminacion_Industria <- Contaminacion %>%
+  left_join(x =., y = Sectores) 
 
-#Faltan gráficas
+levels(factor(Contaminacion_Industria$Pais))
+
+#Gráfico de correlación entre la industrialización y la emisión de CO2 en un país a lo largo de los años.
+
+Contaminacion_Industria %>% 
+  filter( Pais == "China") %>% 
+  ggplot(aes(x = Empleo_Industria, y = Emisiones_Anuales))+
+  geom_point(aes(colour = Pais), show.legend = FALSE)+
+  geom_smooth(aes(colour = Pais), show.legend = FALSE)+
+  labs(title = "Correlación entre el nivel de industrialización y las emisiones de CO2", x = "Porcentaje de empleo en industria", y = "Emisiones de C02 anuales en millones de toneladas")+
+  #Nos permite distinguir el país que es, más útil si se hubiera hecho filter con varios países, aquí solo sirve para mostrar el nombre del país
+  facet_wrap(vars(Pais))+
+  Tema_Graficas
+
+#Como puede observarse, a medida que aumenta el nivel de industria del país, aumentan las emisiones de CO2 producidas por este. Esto confirma la relación de proporcionalidad directa entre ambos factores.
 
 
 
-# 2.2.- Una comparación entre países que no requiere de todo el periodo que aparece en los datos (2005 a 2013) por lo que se va a seleccionar únicamente un año, 2008
+# 2.2.- Una comparación entre países más industrializados y menos, para ver cómo varían sus tasas a lo largo de dicho periodo de tiempo, así como para observar diferencias significativas en las tasas de emisiones de CO2.
 
 # Nota!! Para asegurar que los datos no se vean influenciados por otras variables, se van a seleccionar solo los países que superen en un 25% el empleo basado en la industria, y se van a comparar con aquellos inferiores al 10%
 
-Contaminacion_Industria <- Sectores %>%
-  filter(Año == 2008) %>%
-  left_join(x =., y = Contaminacion) %>% 
-  filter(Año == 2008)
+#Contaminacion_Industria_AltosYBajos <- Contaminacion %>%
+  #left_join(x =., y = Sectores) %>% 
+  #filter(Empleo_Industria >= 25.0 | Empleo_Industria <= 10.0)
 
-Contaminacion_Industria_Altos <- Sectores %>%
-  filter(Año == 2008) %>%
-  left_join(x =., y = Contaminacion) %>% 
-  filter(Año == 2008) %>%
+#levels(factor(Contaminacion_Industria_AltosYBajos$Pais))
+
+Contaminacion_Industria_Altos <- Contaminacion %>%
+  left_join(x =., y = Sectores) %>% 
   filter(Empleo_Industria >= 25.0)
 
 levels(factor(Contaminacion_Industria_Altos$Pais))
 
-Contaminacion_Industria_Bajos <- Sectores %>%
-  filter(Año == 2008) %>%
-  left_join(x =., y = Contaminacion) %>% 
-  filter(Año == 2008) %>%
+Contaminacion_Industria_Bajos <- Contaminacion %>%
+  left_join(x =., y = Sectores) %>% 
   filter(Empleo_Industria <= 10.0)
 
 levels(factor(Contaminacion_Industria_Bajos$Pais))
 
 #Si se observan los resultados obtenidos, los países como mayores tasas de industrialización son en su mayoría países desarrollados de Europa y Asia, mientras que los países poco industrializados son considerados el "Tercer Mundo" y se encuentran en África, Sudamérica y Asia
 
-#Se van a seleccionar 10 países de cada grupo aleatoriamente, ya que trabajar con todos ellos llevaría a una mala visualización de los datos en las gráficas
+#Se van a seleccionar 5 países de cada grupo aleatoriamente, ya que trabajar con todos ellos llevaría a una mala visualización de los datos en las gráficas
 
 #Emisiones_Altos: Austria, China, Germany, Iran, Malaysia, Mexico, South Africa, Spain, Turkey, United Arab Emirates
 
-Contaminacion_Industria %>% 
-  filter(Empleo_Industria >= 25.0) %>% 
-  filter( Pais == "Finland" | Pais == "Germany" | Pais == "Iceland" |
-            Pais == "Ireland" | Pais == "Italy" | Pais == "Netherlands" | Pais == "Norway" | Pais == "Poland" |
-            Pais == "Portugal" | Pais == "Spain" | Pais == "Sweden" ) %>% 
-  ggplot(aes(x = Pais, y = Emisiones_Anuales, stat = 'identity'))+
-  geom_bar(aes(colour = Pais), show.legend = FALSE)+
-  labs(title =  "Niveles de contaminación en países fuertemente industrializados", x = "Pais", y = "Millones de toneladas de emisiones de CO2 anuales")+
-  facet_grid(vars(Pais))+
+Contaminacion_Industria_A <- Contaminacion_Industria_Altos %>%
+  filter( Pais == "Austria" | Pais == "Egypt" | Pais == "Germany" | Pais == "Iran" | Pais == "Malaysia" | Pais == "Mexico" | Pais == "South Africa" | Pais == "Spain" |Pais == "Turkey" | Pais == "United Arab Emirates")
+ 
+Contaminacion_Industria_A
+
+Contaminacion_Industria_A %>% 
+  ggplot(aes(x = Empleo_Industria, y = Emisiones_Anuales))+
+  geom_point(aes(colour = Pais), show.legend = TRUE)+
+  geom_smooth(aes(colour = Pais), show.legend = FALSE)+
+  labs(title = "Contaminación en países fuertemente industrializados", x = "Porcentaje de empleo en industria", y = "Emisiones de C02 anuales en millones de toneladas")+
+  #facet_wrap(vars(Pais))+ Si se quisieran observar por separado, aunque no permite realizar la comparación visualmente
   Tema_Graficas
 
-
-Contaminacion_Industria_Altos %>% 
-  #filter( Pais == "Austria" | Pais == "China" | Pais == "Germany" |
-            #Pais == "Iran" | Pais == "Malaysia" | Pais == "Mexico" | Pais == "South                   Africa" | Pais == "Spain" |Pais == "Turkey" | Pais == "United Arab Emirates") %>% 
-  ggplot(aes(x = Emisiones_Anuales))+
-  geom_bar(aes(colour = Pais), show.legend = FALSE)+
-  geom_smooth(show.legend = FALSE)+
-  labs(title = "Niveles de contaminación en países fuertemente industrializados", x = "País") #y = "Millones de toneladas de emisiones de CO2 anuales")
-  + Tema_Graficas
 
 #Emisiones_Bajos: Ethiopia, Haiti, Laos, Mali, Mozambique, Niger, Sierra Leone, Somalia, Solomon Islands, Uganda
 
-Contaminacion_Industria_Bajos %>% 
-  filter( Pais == "Ethiopia" | Pais == "Haiti" | Pais == "Laos" |
-            Pais == "Mali" | Pais == "Mozambique" | Pais == "Niger" | Pais == "Sierra Leone" | Pais == "Somalia" |Pais == "Solomon Islands" | Pais == "Uganda") %>% 
-  ggplot(aes(x = Pais, y = Emisiones_Anuales))+
-  geom_bar(aes(colour = Pais), show.legend = FALSE)+
-  geom_smooth(show.legend = FALSE)+
-  labs(title = "Niveles de contaminación en países fuertemente industrializados",x = "País", y = "Millones de toneladas de emisiones de CO2 anuales")+
+Contaminacion_Industria_B <- Contaminacion_Industria_Bajos %>% 
+  filter( Pais == "Ethiopia" | Pais == "Haiti" | Pais == "Laos" | Pais == "Mali" | Pais == "Mozambique" | Pais == "Niger" | Pais == "Sierra Leone" | Pais == "Somalia" |Pais == "Solomon Islands" | Pais == "Uganda") 
+  
+Contaminacion_Industria_B
+
+Contaminacion_Industria_B %>%
+  ggplot(aes(x = Empleo_Industria, y = Emisiones_Anuales))+
+  geom_point(aes(colour = Pais), show.legend = TRUE)+
+  geom_smooth(aes(colour = Pais), show.legend = FALSE)+
+  labs(title = "Contaminación en países débilmente industrializados", x = "Porcentaje de empleo en industria", y = "Emisiones de C02 anuales en millones de toneladas")+
+  #facet_wrap(vars(Pais))+ Si se quisieran observar por separado, aunque no permite realizar la comparación visualmente
   Tema_Graficas
+
+#Si se observan ambas gráficas al mismo tiempo, haciendo especial hincapié en el eje de abscisas, donde aparecen las unidades de emisiones de CO2, se observa que los índices son superiores en los países con mayor porcentaje. 
+
+#Sin embargo, se requiere de mayor análisis para eliminar la influencia de otras posibles variables que alteren estos resultados, aunque a simple vista la relación estimada se cumple.
 
 
 
