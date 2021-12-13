@@ -51,7 +51,13 @@ Inicialmente, se plantean una serie de objetivos de estudio, para los cuales se 
 
 #### **Justificación del tema**
 
-La OMS define el suicidio como aquella acción mediante la cual un individuo se causa un daño a sí mismo, llegando a la muerte, sin tener en cuenta la intencionalidad y el conocimiento de los motivos. Sus características son la voluntariedad y la premeditación.
+La OMS define el suicidio como aquella acción mediante la cual un individuo se causa un daño a sí mismo, llegando a la muerte, sin tener en cuenta la intencionalidad y el conocimiento de los motivos. Sus características son la voluntariedad y la premeditación.\
+
+Algunos dicen que el cambio climático es la mayor amenaza de nuestra época, mientras que otros dicen que es un mito basado en ciencia dudosa. \
+
+¿Existe el cambio climático?¿de ser así tendría alguna relacion con las emisiones de CO2 que expulsamos a la atmósfera?¿Tiene alguna relación el clima de una zona con nuestra salud mental?¿Habrá alguna relación entre los suicidios y la forma de vida de un país?
+
+En este seminario se intentará dar respuesta a estas preguntas, estará en vuestras manos el hacer algo tras conocer esta información.
 
 Añadir más justificación y relacionarla con la contaminación y la temperatura
 
@@ -144,22 +150,25 @@ Tema_Graficas<- theme_bw()+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 DT::datatable(Clima)
 ```
+**Nota:** Temperatura Media en ºC
 
 ### Suicidios
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 DT::datatable(Suicidio)
 ```
+**Nota:** Tasa de suicidio por 100.000 habitantes
 
 ### Emisiones CO2
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 DT::datatable(Contaminacion)
 ```
+**Nota:** Emisiones anuales en toneladas
 
 ### Sectores laborales
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 DT::datatable(Sectores)
 ```
-
+**Nota:** Empleo_Agricultura, Empleo_Industria y Empleo_Servicios en porcentaje
 
 # 3. Desarrollo de los objetivos
 
@@ -241,6 +250,11 @@ Sectores_Suicidio <- Sectores %>%
   filter(Region == "Europe")
 ```
 
+Los datos de la siguiente tabla dan información conjunta sobre las emisiones de CO2 anuales de cada país y el suicidio por países. Trabajaremos sobre ellos en las gráficas.\
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(Sectores_Suicidio)
+```
+
 #### Elige visualización{.tabset .tabset-fade .tabset-pills}
 
 ##### Mujeres
@@ -287,7 +301,9 @@ Observación: parece que forma de la línea de industria en mujeres se intercamb
 Evaluación de variaciones de emisiones de CO2 y su impacto en la temperatura media de una región/país. \
 Se representarán los datos de emisiones medias y temperatura media del mundo para ver la comparación entre el análisis global y la local de un país determinado.\
 
-Se han seleccionado para el análisis 5 países: España, India, Senegal, China, Canadá y Japón
+Se han seleccionado para el análisis 5 países: España, India, Senegal, China, Canadá y Japón \
+
+En este objetivo volvemos a trabajar con las tablas del inicio para poder visualizar las gráficas con una cantidad mayor de años, hemos seleccionado años desde 1970 hasta el 2013.
 
 ```{r, echo=FALSE, message=FALSE, Clima_Contaminacion}
 
@@ -312,14 +328,28 @@ CC <- left_join(x=Contaminacion_Obj4, y=Clima_Obj_4 )
 CC_Paises <- pivot_longer(CC, names_to = 'CO2_T', values_to = 'Valores', cols=c(Emisiones_Anuales, Temperatura_Media))
 
 
+
+
+```
+\
+La siguiente tabla, que contiene información conjunta sobre el clima y las emisiones de CO2 por países, permitirá la correcta representación de las gráficas de las que se obtendrán las conclusiones.\
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(CC_Paises)
+```
+
+Para realizar la gráfica de emisiones mundiales, necesitamos modificar la tabla obtenida anteriormente, de la siguiente forma:\
+```{r, message=FALSE}
 CC_Mundo<- CC %>%
   group_by(Año)%>% 
   summarise(Emisiones_Mundo= mean(Emisiones_Anuales, na.rm=TRUE), Temperatura_Mundo= mean(Temperatura_Media, na.rm= TRUE))
 
 ```
-
-
-#### Mundo{.tabset .tabset-fade .tabset-pills}
+\
+Obtenemos la siguiente tabla con la que podemos trabajar\
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(CC_Mundo)
+```
+\
 ```{r, echo=FALSE, message=FALSE, Conjunto_Mundo}
 
 CC_Mundo %>%
@@ -332,6 +362,8 @@ CC_Mundo %>%
   Tema_Graficas
 
 ```
+
+#### Selecciona un país {.tabset .tabset-fade .tabset-pills}
 
 ##### España
 
@@ -419,3 +451,14 @@ En las gráficas obtenidas podemos observar como las emisiones del dióxido de c
 Se visualiza que en aquellos países en los que en los últimos años han disminuido las emisiones de CO2, cómo en España y en Japón, el aumento de la temperatura se atenúa. Se confirman todas las noticias que escuchamos en nuestro día a día, estamos a tiempo de frenar el calentamiento global, si bajamos las emisiones.
 
 # 4. Bibliografía
+
+1. Berkeley Earth. (s/f). Climate change: Earth surface temperature data [Data set]. Recuperado de [https://www.kaggle.com/berkeleyearth/climate-change-earth-surface-temperature-data](https://www.kaggle.com/berkeleyearth/climate-change-earth-surface-temperature-data)\
+
+2. Suicide rates. (s/f). Who.int. Recuperado de [https://www.who.int/data/gho/data/themes/mental-health/suicide-rates](https://www.who.int/data/gho/data/themes/mental-health/suicide-rates)\
+
+
+3. Annual CO₂ emissions. (s/f). Ourworldindata.org. Recuperado de [https://ourworldindata.org/grapher/annual-co2-emissions-per-country?tab=table&time=latest](https://ourworldindata.org/grapher/annual-co2-emissions-per-country?tab=table&time=latest)
+
+
+4. Share of employment in agriculture, industry, and services. (s/f). Ourworldindata.org. Recuperado de [https://ourworldindata.org/grapher/share-of-employment-in-agriculture-industry-and-services?time=2014..latest](https://ourworldindata.org/grapher/share-of-employment-in-agriculture-industry-and-services?time=2014..latest)
+
