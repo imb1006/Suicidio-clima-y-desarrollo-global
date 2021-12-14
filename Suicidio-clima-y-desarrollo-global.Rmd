@@ -109,6 +109,7 @@ sDatos_Emisiones <- Datos_Emisiones %>% filter(between(Year,2005,2013))
 ```
 
 Además, con el objetivo de obtener tablas cohesionadas que permitan un mejor manejo de la información, se ha realizado la selección y el renombramiento de las columnas de interés de los diferentes tibbles.
+
 ```{r, message=FALSE}
 # * Suicidio --------------------------------------------------------------
 Suicidio <- sDatos_Suicidio %>% 
@@ -172,13 +173,14 @@ DT::datatable(Suicidio)
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 DT::datatable(Contaminacion)
 ```
-**Nota:** Emisiones anuales en toneladas
+**Nota:** Emisiones anuales en millones de toneladas 
 
 ### Sectores laborales
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 DT::datatable(Sectores)
 ```
 **Nota:** Empleo_Agricultura, Empleo_Industria y Empleo_Servicios en porcentaje
+
 
 # 3. Desarrollo de los objetivos
 
@@ -201,6 +203,7 @@ DT::datatable(Clima_Suicidio)
 
 #### Selecciona visualización{.tabset .tabset-fade .tabset-pills}
 ##### Conjunto_Paises
+
 ```{r, echo=FALSE, message=FALSE, Conjunto_Paises}
 Clima_Suicidio %>% 
   filter(Tasa_suicidio > 0, Sexo == "Female") %>% 
@@ -264,11 +267,41 @@ Contaminacion_Industria %>%
   filter( Pais == "China") %>% 
   ggplot(aes(x = Empleo_Industria, y = Emisiones_Anuales))+
   geom_point(aes(colour = Pais), show.legend = FALSE)+
-  geom_smooth(aes(colour = Pais), show.legend = FALSE)+
+  geom_smooth(aes(colour = Pais), method = "lm", formula = 'y ~ x', show.legend = FALSE)+
   labs(title = "Correlación entre el nivel de industrialización y las emisiones de CO2", x = "Porcentaje de empleo en industria", y = "Emisiones de C02 anuales en millones de toneladas")+
   #Nos permite distinguir el país que es, más útil si se hubiera hecho filter con varios países, aquí solo sirve para mostrar el nombre del país
   facet_wrap(vars(Pais))+
   Tema_Graficas
+```
+
+#####Paises_Industrializados
+
+```{r, echo=FALSE, message=FALSE, Paises_Industrializados}
+Contaminacion_Industria_Altos <- Contaminacion %>%
+  left_join(x =., y = Sectores) %>% 
+  filter(Empleo_Industria >= 25.0)
+```
+
+#####Países_NoIndustrializados
+
+```{r, echo=FALSE, message=FALSE, Paises_NoIndustrializados}
+Contaminacion_Industria_Bajos <- Contaminacion %>%
+  left_join(x =., y = Sectores) %>% 
+  filter(Empleo_Industria <= 10.0)
+```
+
+#####Paises_Escogidos_Altos
+
+```{r, echo=FALSE, message=FALSE, Paises_Escogidos_Altos}
+Contaminacion_Industria_A <- Contaminacion_Industria_Altos %>%
+  filter( Pais == "Austria" | Pais == "Egypt" | Pais == "Germany" | Pais == "Iran" | Pais == "Malaysia" | Pais == "Mexico" | Pais == "South Africa" | Pais == "Spain" |Pais == "Turkey" | Pais == "United Arab Emirates")
+```
+
+#####Países_Escogidos_Bajos
+
+```{r, echo=FALSE, message=FALSE, Paises_Escogidos_Bajos}
+Contaminacion_Industria_B <- Contaminacion_Industria_Bajos %>% 
+  filter( Pais == "Ethiopia" | Pais == "Haiti" | Pais == "Laos" | Pais == "Mali" | Pais == "Mozambique" | Pais == "Niger" | Pais == "Sierra Leone" | Pais == "Somalia" |Pais == "Solomon Islands" | Pais == "Uganda") 
 ```
 
 #####Paises_Industria_Alta
@@ -277,8 +310,8 @@ Contaminacion_Industria %>%
 Contaminacion_Industria_A %>% 
   ggplot(aes(x = Empleo_Industria, y = Emisiones_Anuales))+
   geom_point(aes(colour = Pais), show.legend = TRUE)+
-  geom_smooth(aes(colour = Pais), show.legend = FALSE)+
-  labs(title = "Contaminación en países fuertemente industrializados", x = "Porcentaje de empleo en industria", y = "Emisiones de C02 anuales en millones de toneladas")+
+  #Para observar la tendencia lineal, aunque los datos pueden comprenderse sin su uso
+  geom_smooth(aes(colour = Pais), method = "lm", formula = 'y ~ x', show.legend = FALSE)+   labs(title = "Contaminación en países fuertemente industrializados", x = "Porcentaje de empleo en industria", y = "Emisiones de C02 anuales en millones de toneladas")+
   #facet_wrap(vars(Pais))+ Si se quisieran observar por separado, aunque no permite realizar la comparación visualmente
   Tema_Graficas
 ```
@@ -289,7 +322,8 @@ Contaminacion_Industria_A %>%
 Contaminacion_Industria_B %>%
   ggplot(aes(x = Empleo_Industria, y = Emisiones_Anuales))+
   geom_point(aes(colour = Pais), show.legend = TRUE)+
-  geom_smooth(aes(colour = Pais), show.legend = FALSE)+
+  #Para observar la tendencia lineal, aunque los datos pueden comprenderse sin su uso; además, las tendencias en estos países son más complejas de analizar
+  geom_smooth(aes(colour = Pais), method = "lm", formula = 'y ~ x', show.legend = FALSE)+
   labs(title = "Contaminación en países débilmente industrializados", x = "Porcentaje de empleo en industria", y = "Emisiones de C02 anuales en millones de toneladas")+
   #facet_wrap(vars(Pais))+ Si se quisieran observar por separado, aunque no permite realizar la comparación visualmente
   Tema_Graficas
@@ -545,4 +579,4 @@ Se visualiza que en aquellos países en los que en los últimos años han dismin
 
 6. Qué es el cambio climático (s/f). Ministerio de Transición Ecológica y de Reto Demográfico (MITECO) Recuperado de: [https://www.miteco.gob.es/es/cambio-climatico/temas/cumbre-cambio-climatico-cop21/el-cambio-climatico/](https://www.miteco.gob.es/es/cambio-climatico/temas/cumbre-cambio-climatico-cop21/el-cambio-climatico/)
 
-7. Estadística de defunciones según la causa de muerte. 2020 (s/f). Instituto Nacional de Estadística (INE) [https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176780&menu=ultiDatos&idp=1254735573175](https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176780&menu=ultiDatos&idp=1254735573175)
+7. Estadística de defunciones según la causa de muerte. 2020 (s/f). Instituto Nacional de Estadística (INE) Recuperado de: [https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176780&menu=ultiDatos&idp=1254735573175](https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176780&menu=ultiDatos&idp=1254735573175)
