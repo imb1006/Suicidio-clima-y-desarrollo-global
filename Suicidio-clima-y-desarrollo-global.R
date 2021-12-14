@@ -186,7 +186,7 @@ Contaminacion_Industria %>%
   filter( Pais == "China") %>% 
   ggplot(aes(x = Empleo_Industria, y = Emisiones_Anuales))+
   geom_point(aes(colour = Pais), show.legend = FALSE)+
-  geom_smooth(aes(colour = Pais), show.legend = FALSE)+
+  geom_smooth(aes(colour = Pais), method = "lm", formula = 'y ~ x', show.legend = FALSE)+
   labs(title = "Correlación entre el nivel de industrialización y las emisiones de CO2", x = "Porcentaje de empleo en industria", y = "Emisiones de C02 anuales en millones de toneladas")+
   #Nos permite distinguir el país que es, más útil si se hubiera hecho filter con varios países, aquí solo sirve para mostrar el nombre del país
   facet_wrap(vars(Pais))+
@@ -232,8 +232,8 @@ Contaminacion_Industria_A
 Contaminacion_Industria_A %>% 
   ggplot(aes(x = Empleo_Industria, y = Emisiones_Anuales))+
   geom_point(aes(colour = Pais), show.legend = TRUE)+
-  geom_smooth(aes(colour = Pais), show.legend = FALSE)+
-  labs(title = "Contaminación en países fuertemente industrializados", x = "Porcentaje de empleo en industria", y = "Emisiones de C02 anuales en millones de toneladas")+
+  #Para observar la tendencia lineal, aunque los datos pueden comprenderse sin su uso
+  geom_smooth(aes(colour = Pais), method = "lm", formula = 'y ~ x', show.legend = FALSE)+   labs(title = "Contaminación en países fuertemente industrializados", x = "Porcentaje de empleo en industria", y = "Emisiones de C02 anuales en millones de toneladas")+
   #facet_wrap(vars(Pais))+ Si se quisieran observar por separado, aunque no permite realizar la comparación visualmente
   Tema_Graficas
 
@@ -248,7 +248,8 @@ Contaminacion_Industria_B
 Contaminacion_Industria_B %>%
   ggplot(aes(x = Empleo_Industria, y = Emisiones_Anuales))+
   geom_point(aes(colour = Pais), show.legend = TRUE)+
-  geom_smooth(aes(colour = Pais), show.legend = FALSE)+
+  #Para observar la tendencia lineal, aunque los datos pueden comprenderse sin su uso; además, las tendencias en estos países son más complejas de analizar
+  geom_smooth(aes(colour = Pais), method = "lm", formula = 'y ~ x', show.legend = FALSE)+
   labs(title = "Contaminación en países débilmente industrializados", x = "Porcentaje de empleo en industria", y = "Emisiones de C02 anuales en millones de toneladas")+
   #facet_wrap(vars(Pais))+ Si se quisieran observar por separado, aunque no permite realizar la comparación visualmente
   Tema_Graficas
