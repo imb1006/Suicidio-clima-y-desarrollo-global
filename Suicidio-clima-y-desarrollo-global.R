@@ -173,14 +173,14 @@ levels(factor(Sectores$Pais))
 #la tabla "Contaminacion", que era la que menos nombres contenía.
 
 # Nota!! Se va a realizar un doble análisis:
-# 2.1.- Ver la evolución de un país; es decir, si conforme aumenta la industrialización lo hacen también sus emisiones de CO2 y 
+# 2.1.- Ver la evolución de un país; es decir, si conforme aumenta la industrialización lo hacen también sus emisiones de CO2
 
 Contaminacion_Industria <- Contaminacion %>%
   left_join(x =., y = Sectores) 
 
 levels(factor(Contaminacion_Industria$Pais))
 
-#Gráfico de correlación entre la industrialización y la emisión de CO2 en un país a lo largo de los años.
+#Gráfico de correlación entre la industrialización y la emisión de CO2 en un país a lo largo de los años. Se ha seleccionado China.
 
 Contaminacion_Industria %>% 
   filter( Pais == "China") %>% 
@@ -218,11 +218,11 @@ Contaminacion_Industria_Bajos <- Contaminacion %>%
 
 levels(factor(Contaminacion_Industria_Bajos$Pais))
 
-#Si se observan los resultados obtenidos, los países como mayores tasas de industrialización son en su mayoría países desarrollados de Europa y Asia, mientras que los países poco industrializados son considerados el "Tercer Mundo" y se encuentran en África, Sudamérica y Asia
+#Si se observan los resultados obtenidos, los países con mayores tasas de industrialización son en su mayoría países desarrollados de Europa y Asia, mientras que los países poco industrializados son considerados el "Tercer Mundo" y se encuentran en África, Sudamérica y Asia
 
 #Se van a seleccionar 5 países de cada grupo aleatoriamente, ya que trabajar con todos ellos llevaría a una mala visualización de los datos en las gráficas
 
-#Emisiones_Altos: Austria, China, Germany, Iran, Malaysia, Mexico, South Africa, Spain, Turkey, United Arab Emirates
+#Emisiones_Altos: Austria, Egypt, Germany, Iran, Malaysia, Mexico, South Africa, Spain, Turkey, United Arab Emirates
 
 Contaminacion_Industria_A <- Contaminacion_Industria_Altos %>%
   filter( Pais == "Austria" | Pais == "Egypt" | Pais == "Germany" | Pais == "Iran" | Pais == "Malaysia" | Pais == "Mexico" | Pais == "South Africa" | Pais == "Spain" |Pais == "Turkey" | Pais == "United Arab Emirates")
