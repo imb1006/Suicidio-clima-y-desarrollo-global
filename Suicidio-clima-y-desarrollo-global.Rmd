@@ -260,9 +260,8 @@ DT::datatable(Contaminacion_Industria)
 ```
 
 #### Selecciona visualización{.tabset .tabset-fade .tabset-pills}
-##### Gráfico_Correlacion
-
-```{r, echo=FALSE, message=FALSE, Grafico_Correlacion}
+##### Gráfico_Correlación
+```{r, echo=FALSE, message=FALSE, Gráfico_Correlación}
 Contaminacion_Industria %>% 
   filter( Pais == "China") %>% 
   ggplot(aes(x = Empleo_Industria, y = Emisiones_Anuales))+
@@ -274,39 +273,19 @@ Contaminacion_Industria %>%
   Tema_Graficas
 ```
 
-#####Paises_Industrializados
-
+##### Paises_Industria_Alta
 ```{r, echo=FALSE, message=FALSE, Paises_Industrializados}
+# Filtrado de los datos necesarios y selección de países de interés para su estudio.
 Contaminacion_Industria_Altos <- Contaminacion %>%
   left_join(x =., y = Sectores) %>% 
   filter(Empleo_Industria >= 25.0)
-```
 
-#####Países_NoIndustrializados
-
-```{r, echo=FALSE, message=FALSE, Paises_NoIndustrializados}
-Contaminacion_Industria_Bajos <- Contaminacion %>%
-  left_join(x =., y = Sectores) %>% 
-  filter(Empleo_Industria <= 10.0)
-```
-
-#####Paises_Escogidos_Altos
-
-```{r, echo=FALSE, message=FALSE, Paises_Escogidos_Altos}
 Contaminacion_Industria_A <- Contaminacion_Industria_Altos %>%
   filter( Pais == "Austria" | Pais == "Egypt" | Pais == "Germany" | Pais == "Iran" | Pais == "Malaysia" | Pais == "Mexico" | Pais == "South Africa" | Pais == "Spain" |Pais == "Turkey" | Pais == "United Arab Emirates")
 ```
 
-#####Países_Escogidos_Bajos
-
-```{r, echo=FALSE, message=FALSE, Paises_Escogidos_Bajos}
-Contaminacion_Industria_B <- Contaminacion_Industria_Bajos %>% 
-  filter( Pais == "Ethiopia" | Pais == "Haiti" | Pais == "Laos" | Pais == "Mali" | Pais == "Mozambique" | Pais == "Niger" | Pais == "Sierra Leone" | Pais == "Somalia" |Pais == "Solomon Islands" | Pais == "Uganda") 
-```
-
-#####Paises_Industria_Alta
-
 ```{r, echo=FALSE, message=FALSE, Paises_Industria_Alta}
+# Obtención del gráfico para la evaluación de los datos.
 Contaminacion_Industria_A %>% 
   ggplot(aes(x = Empleo_Industria, y = Emisiones_Anuales))+
   geom_point(aes(colour = Pais), show.legend = TRUE)+
@@ -316,9 +295,20 @@ Contaminacion_Industria_A %>%
   Tema_Graficas
 ```
 
-#####Paises_Industria_Baja
+##### Paises_Industria_Baja
+
+```{r, echo=FALSE, message=FALSE, Paises_NoIndustrializados}
+# Filtrado de los datos necesarios y selección de países de interés para su estudio.
+Contaminacion_Industria_Bajos <- Contaminacion %>%
+  left_join(x =., y = Sectores) %>% 
+  filter(Empleo_Industria <= 10.0)
+
+Contaminacion_Industria_B <- Contaminacion_Industria_Bajos %>% 
+  filter( Pais == "Ethiopia" | Pais == "Haiti" | Pais == "Laos" | Pais == "Mali" | Pais == "Mozambique" | Pais == "Niger" | Pais == "Sierra Leone" | Pais == "Somalia" |Pais == "Solomon Islands" | Pais == "Uganda") 
+```
 
 ```{r, echo=FALSE, message=FALSE, Paises_Industria_Baja}
+# Obtención del gráfico para la evaluación de los datos.
 Contaminacion_Industria_B %>%
   ggplot(aes(x = Empleo_Industria, y = Emisiones_Anuales))+
   geom_point(aes(colour = Pais), show.legend = TRUE)+
